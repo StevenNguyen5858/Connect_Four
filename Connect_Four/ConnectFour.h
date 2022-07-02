@@ -17,23 +17,23 @@ void function_open_play();
 void function_open_home();
 
 SNRadio_Button* rb_difficulty;
-SNRadio_Button rb_easy("Easy", 9, 4, 3, 1, &function_difficulty, &rb_difficulty);
-SNRadio_Button rb_medium("Medium", 13, 4, 4, 1, &function_difficulty, &rb_difficulty);
-SNRadio_Button rb_hard("Hard", 18, 4, 3, 1, &function_difficulty, &rb_difficulty);
+SNRadio_Button rb_easy("Easy", 10, 4, 3, 1, &function_difficulty, &rb_difficulty);
+SNRadio_Button rb_medium("Medium", 14, 4, 4, 1, &function_difficulty, &rb_difficulty);
+SNRadio_Button rb_hard("Hard", 19, 4, 3, 1, &function_difficulty, &rb_difficulty);
 
 SNLabel l_connect_four("Connect Four", true, 9, .5, 14, 1.5);
-SNLabel l_player1("Player1:", false, 9.2, 6.1, 4, 0.6);
-SNLabel l_color1("Color:", false, 9.2, 7.6, 4, 0.6);
-SNLabel l_player2("Player2:", false, 9.2, 9.6, 4, 0.6);
-SNLabel l_color2("Color:", false, 9.2, 11.1, 4, 0.6);
-SNLabel l_starting_player("Starting P:", false, 9.2, 12.6, 4, 0.6);
+SNLabel l_player1("Player1:", false, 10.2, 6.1, 4, 0.6);
+SNLabel l_color1("Color:", false, 10.2, 7.6, 4, 0.6);
+SNLabel l_player2("Player2:", false, 10.2, 9.6, 4, 0.6);
+SNLabel l_color2("Color:", false, 10.2, 11.1, 4, 0.6);
+SNLabel l_starting_player("Starting P:", false, 10.2, 12.6, 4, 0.6);
 
-SNButton b_player1("Player1", 15, 6, 6, 1, &temp);
-SNButton b_color1("Color", 15, 7.5, 6, 1, &temp);
-SNButton b_player2("Player2", 15, 9.5, 6, 1, &temp);
-SNButton b_color2("Color", 15, 11, 6, 1, &temp);
-SNButton b_starting_player("Player1", 15, 12.5, 6, 1, &temp);
-SNButton b_play("Play", 13.5, 14, 3, 1, &function_open_play);
+SNButton b_player1("Player1", 16, 6, 6, 1, &temp);
+SNButton b_color1("Color", 16, 7.5, 6, 1, &temp);
+SNButton b_player2("Player2", 16, 9.5, 6, 1, &temp);
+SNButton b_color2("Color", 16, 11, 6, 1, &temp);
+SNButton b_starting_player("Player1", 16, 12.5, 6, 1, &temp);
+SNButton b_play("Play", 14.5, 14, 3, 1, &function_open_play);
 vector<SNElement*> main_elements = {
 	&rb_easy,
 	&rb_medium,
@@ -99,7 +99,7 @@ void draw_main() {
 	stroke_weight(5);
 	stroke(255);
 	fill(220);
-	rect(8, 3, 14, 13, 25);
+	rect(9, 3, 14, 13, 25);
 }
 void setup_play() {
 
