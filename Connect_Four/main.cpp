@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "SNElement.h"
+#include "ConnectFour.h"
 // Testing push from Steven.
 
 
@@ -36,7 +37,10 @@
 
 // Runs once at start of program.
 void setup() {
-	
+	my_app.add_page(&main_page);
+	my_app.add_page(&play_page);
+	rb_difficulty = &rb_easy;
+	rb_easy.is_selected = true;
 }
 
 // Loops for application drawing.

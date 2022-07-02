@@ -23,5 +23,8 @@
     <ClInclude Include="SNElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConnectFour.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

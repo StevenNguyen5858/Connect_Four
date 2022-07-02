@@ -385,6 +385,8 @@ public:
 		else {
 			image(&radio_empty, x, y, 1, 1);
 		}
+		fill(255);
+		stroke_weight(3);
 		text(name, x + 1.2, y + .08, 0.6);
 	}
 	void radio_switch() {
