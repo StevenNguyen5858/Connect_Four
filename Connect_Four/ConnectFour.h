@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "SNElement.h"
 #include "Game_Controller.h"
+#include "SNPage.h"
 
 
 /*	Group1: SNElement declarations
@@ -13,6 +14,8 @@
 // *******************************************************************************************************
 // Group1: SNElement declarations
 void temp() {}
+void function_refresh();
+
 void function_difficulty();
 void function_open_play();
 void function_open_home();
@@ -22,6 +25,10 @@ void function_color1();
 void function_player2();
 void function_color2();
 void function_starting_player();
+
+void function_restart();
+
+Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh);
 
 SNRadio_Button* rb_difficulty;
 SNRadio_Button rb_easy("Easy", 10, 4, 3, 1, &function_difficulty, &rb_difficulty);
@@ -61,12 +68,13 @@ vector<SNElement*> main_elements = {
 
 SNLabel l_game_log("GAME LOG", true, .9, 4, 6, .8);
 SNButton b_undo_move("Undo Move", 25, 4, 6, 1, &temp);
-SNButton b_restart_game("Restart Game", 25, 6, 6, 1, &temp);
+SNButton b_restart_game("Restart Game", 25, 6, 6, 1, &function_restart);
 SNButton b_home_screen("Home Screen", 25, 8, 6, 1, &function_open_home);
 
 vector<SNElement*> play_elements = {
 	&l_connect_four,
 	&l_game_log,
+	&my_game,
 	&b_undo_move,
 	&b_restart_game,
 	&b_home_screen
@@ -86,18 +94,19 @@ SNPage play_page("Play Page", play_elements, &setup_play, &draw_play);
 
 // *******************************************************************************************************
 // Group3 : SNElements' function initializations
+void function_open_play() {
+	my_app.activate_page(&play_page);
+}
+
+// Main page settings functions.
+void function_refresh() {
+	my_app.current_page->draw_page();
+}
 void function_difficulty() {
 	my_app.refresh_page();
 	SNRadio_Button temp_rb = **(rb_easy.current_rb);
 	my_game.set_bot_difficulty(temp_rb.name);
 }
-void function_open_play() {
-	my_app.activate_page(&play_page);
-}
-void function_open_home() {
-	my_app.activate_page(&main_page);
-}
-
 void function_player1() {
 	my_game.player1_toggle_type();
 	b_player1.name = my_game.player1_type();
@@ -126,13 +135,23 @@ void function_starting_player() {
 	my_app.current_page->draw_page();
 }
 
+// Play page functions.
+void function_restart() {
+	my_game.restart();
+}
+void function_open_home() {
+	my_game.restart();
+	my_app.activate_page(&main_page);
+}
+
+
 // *******************************************************************************************************
 // Group4 : SNEPages' function initializations 
 void setup_main() {
 
 }
 void draw_main() {
-	stroke_weight(5);
+	stroke_weight(2);
 	stroke(255);
 	fill(220);
 	rect(9, 3, 14, 13, 25);
@@ -141,10 +160,9 @@ void setup_play() {
 
 }
 void draw_play() {
-	stroke_weight(5);
+	stroke_weight(2);
 	fill(220);
 	stroke(255);
-	rect(9, 4, 14, 12.5, 25);
 	rect(25, 10, 6, 6.5, 25);
 	rect(1, 4, 6, 12.5, 25);
 }

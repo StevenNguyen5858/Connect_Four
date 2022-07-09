@@ -28,22 +28,80 @@ private:
 	player player1;
 	player player2;
 	int starting_player = 1; // 1(player1), 2(player2)
+	int board[7][6];
+	void (*refresh)();
 public:
 
 	// Default Constructor:
-	Game_Controller() {
+	Game_Controller() {}
+	// Parameterized Constructor:
+	Game_Controller(string name, double x, double y, double w, double h, void (*refresh)())
+	: SNElement(name, x, y, w, h){
+		type = "Game Controller";
+		this->refresh = refresh;
 		player1.~player();
 		new(&player1) player("Player 1", 0, false);
 		player2.~player();
 		new(&player2) player("Player 2", 1, false);
+		for (int x = 0; x < 7; x++) {
+			for (int y = 0; y < 6; y++) {
+				board[x][y] = -1;
+			}
+		}
 	}
 
 	// Method
 	void draw_element() {
-
+		// Board outline
+		stroke_weight(2);
+		fill(220);
+		stroke(255);
+		rect(x, y, w, h, 25);
+		// Tokens
+		for (int x = 0; x < 7; x++) {
+			for (int y = 0; y < 6; y++) {
+				if (board[x][y] == 0) {
+					fill(0);
+				}
+				else if (board[x][y] == 1) {
+					fill(sf::Color(255, 0, 0));
+				} else {
+					fill(32);
+				}
+				circle(this->x+.5+(2*x), this->y+.5+(2*y), 1.5);
+			}
+		}
+	}
+	// (Board) Methods
+	void place_token(int x) {
+		int drop_col = (x - 9) / 2;
+		if (drop_col > 6 || drop_col < 0) {
+			return;
+		}
+		cout << "Drop test for column " << drop_col << endl;
+		for (int r = 5; r >= 0; r--) {
+			cout << "  Testing y " << r << ":";
+			if (board[drop_col][r] == -1) {
+				cout << "Is empty" << endl;
+				board[drop_col][r] = 1;
+				break;
+			}
+			else {
+				cout << "Is full" << endl;
+			}
+		}
+		refresh();
+	}
+	void restart() {
+		for (int x = 0; x < 7; x++) {
+			for (int y = 0; y < 6; y++) {
+				board[x][y] = -1;
+			}
+		}
+		refresh();
 	}
 
-	// Setter Methods
+	// (Settings) Setter Methods
 	void player1_toggle_color() {
 		(player1.color == 0) ? (player1.color = 1) : (player1.color = 0);
 		if (player1.color == player2.color) {
@@ -77,7 +135,7 @@ public:
 		}
 	}
 
-	// Getter Methods:
+	// (Settings) Getter Methods:
 	string player1_color() {
 		string color;
 		(player1.color == 0) ? (color = "Black") : (color = "Red");
@@ -101,6 +159,4 @@ public:
 		(starting_player == 1) ? player_name = player1.name : player_name = player2.name;
 		return player_name;
 	}
-
 };
-Game_Controller my_game = Game_Controller();

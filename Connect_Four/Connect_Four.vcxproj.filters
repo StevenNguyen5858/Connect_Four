@@ -29,5 +29,8 @@
     <ClInclude Include="Game_Controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SNPage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
