@@ -39,6 +39,7 @@
 void setup() {
 	my_app.add_page(&main_page);
 	my_app.add_page(&play_page);
+	my_app.current_page = &main_page;
 	rb_difficulty = &rb_easy;
 	rb_easy.is_selected = true;
 }

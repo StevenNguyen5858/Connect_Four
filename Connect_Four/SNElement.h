@@ -458,7 +458,7 @@ public:
 	}
 };
 
-bool uses_dev_grid = true;
+bool uses_dev_grid = false;
 class SNPage {
 	// Access specifier:
 public:

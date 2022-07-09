@@ -1,11 +1,10 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Connect_Four", "Connect_Four\Connect_Four.vcxproj", "{991B29D2-3D9E-4D6A-8238-173BC7A2FF92}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Connect Four Installer", "App Installer\Connect Four Installer.vdproj", "{53FFC9C9-2DD6-4871-8C14-A3C2187E82F9}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Connect Four", "Connect Four\Connect Four.vdproj", "{058992A0-1E5E-4AB2-B5BC-7FAE868C4252}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,11 +22,11 @@ Global
 		{991B29D2-3D9E-4D6A-8238-173BC7A2FF92}.Release|x64.Build.0 = Release|x64
 		{991B29D2-3D9E-4D6A-8238-173BC7A2FF92}.Release|x86.ActiveCfg = Release|Win32
 		{991B29D2-3D9E-4D6A-8238-173BC7A2FF92}.Release|x86.Build.0 = Release|Win32
-		{53FFC9C9-2DD6-4871-8C14-A3C2187E82F9}.Debug|x64.ActiveCfg = Debug
-		{53FFC9C9-2DD6-4871-8C14-A3C2187E82F9}.Debug|x86.ActiveCfg = Debug
-		{53FFC9C9-2DD6-4871-8C14-A3C2187E82F9}.Release|x64.ActiveCfg = Release
-		{53FFC9C9-2DD6-4871-8C14-A3C2187E82F9}.Release|x64.Build.0 = Release
-		{53FFC9C9-2DD6-4871-8C14-A3C2187E82F9}.Release|x86.ActiveCfg = Release
+		{058992A0-1E5E-4AB2-B5BC-7FAE868C4252}.Debug|x64.ActiveCfg = Debug
+		{058992A0-1E5E-4AB2-B5BC-7FAE868C4252}.Debug|x86.ActiveCfg = Debug
+		{058992A0-1E5E-4AB2-B5BC-7FAE868C4252}.Release|x64.ActiveCfg = Release
+		{058992A0-1E5E-4AB2-B5BC-7FAE868C4252}.Release|x64.Build.0 = Release
+		{058992A0-1E5E-4AB2-B5BC-7FAE868C4252}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

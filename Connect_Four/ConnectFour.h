@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "SNElement.h"
+#include "Game_Controller.h"
 
 
 /*	Group1: SNElement declarations
@@ -16,6 +17,12 @@ void function_difficulty();
 void function_open_play();
 void function_open_home();
 
+void function_player1();
+void function_color1();
+void function_player2();
+void function_color2();
+void function_starting_player();
+
 SNRadio_Button* rb_difficulty;
 SNRadio_Button rb_easy("Easy", 10, 4, 3, 1, &function_difficulty, &rb_difficulty);
 SNRadio_Button rb_medium("Medium", 14, 4, 4, 1, &function_difficulty, &rb_difficulty);
@@ -28,11 +35,11 @@ SNLabel l_player2("Player2:", false, 10.2, 9.6, 4, 0.6);
 SNLabel l_color2("Color:", false, 10.2, 11.1, 4, 0.6);
 SNLabel l_starting_player("Starting P:", false, 10.2, 12.6, 4, 0.6);
 
-SNButton b_player1("Player1", 16, 6, 6, 1, &temp);
-SNButton b_color1("Color", 16, 7.5, 6, 1, &temp);
-SNButton b_player2("Player2", 16, 9.5, 6, 1, &temp);
-SNButton b_color2("Color", 16, 11, 6, 1, &temp);
-SNButton b_starting_player("Player1", 16, 12.5, 6, 1, &temp);
+SNButton b_player1(my_game.player1_type(), 16, 6, 6, 1, &function_player1);
+SNButton b_color1(my_game.player1_color(), 16, 7.5, 6, 1, &function_color1);
+SNButton b_player2(my_game.player2_type(), 16, 9.5, 6, 1, &function_player2);
+SNButton b_color2(my_game.player2_color(), 16, 11, 6, 1, &function_color2);
+SNButton b_starting_player(my_game.starting_player_name(), 16, 12.5, 6, 1, &function_starting_player);
 SNButton b_play("Play", 14.5, 14, 3, 1, &function_open_play);
 vector<SNElement*> main_elements = {
 	&rb_easy,
@@ -81,6 +88,8 @@ SNPage play_page("Play Page", play_elements, &setup_play, &draw_play);
 // Group3 : SNElements' function initializations
 void function_difficulty() {
 	my_app.refresh_page();
+	SNRadio_Button temp_rb = **(rb_easy.current_rb);
+	my_game.set_bot_difficulty(temp_rb.name);
 }
 void function_open_play() {
 	my_app.activate_page(&play_page);
@@ -89,6 +98,33 @@ void function_open_home() {
 	my_app.activate_page(&main_page);
 }
 
+void function_player1() {
+	my_game.player1_toggle_type();
+	b_player1.name = my_game.player1_type();
+	my_app.current_page->draw_page();
+}
+void function_player2() {
+	my_game.player2_toggle_type();
+	b_player2.name = my_game.player2_type();
+	my_app.current_page->draw_page();
+}
+void function_color1() {
+	my_game.player1_toggle_color();
+	b_color1.name = my_game.player1_color();
+	b_color2.name = my_game.player2_color();
+	my_app.current_page->draw_page();
+}
+void function_color2() {
+	my_game.player2_toggle_color();
+	b_color2.name = my_game.player2_color();
+	b_color1.name = my_game.player1_color();
+	my_app.current_page->draw_page();
+}
+void function_starting_player() {
+	my_game.toggle_starting_player();
+	b_starting_player.name = my_game.starting_player_name();
+	my_app.current_page->draw_page();
+}
 
 // *******************************************************************************************************
 // Group4 : SNEPages' function initializations 
