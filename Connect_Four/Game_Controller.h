@@ -28,7 +28,7 @@ private:
 	player player1;
 	player player2;
 	int starting_player = 1; // 1(player1), 2(player2)
-	int board[7][6];
+	int board[6][7];
 	void (*refresh)();
 public:
 
@@ -43,9 +43,11 @@ public:
 		new(&player1) player("Player 1", 0, false);
 		player2.~player();
 		new(&player2) player("Player 2", 1, false);
+		
+		
 		for (int x = 0; x < 7; x++) {
 			for (int y = 0; y < 6; y++) {
-				board[x][y] = -1;
+				board[y][x] = -1;
 			}
 		}
 	}
@@ -58,12 +60,14 @@ public:
 		stroke(255);
 		rect(x, y, w, h, 25);
 		// Tokens
+		
+		
 		for (int x = 0; x < 7; x++) {
 			for (int y = 0; y < 6; y++) {
-				if (board[x][y] == 0) {
+				if (board[y][x] == 0) {
 					fill(0);
 				}
-				else if (board[x][y] == 1) {
+				else if (board[y][x] == 1) {
 					fill(sf::Color(255, 0, 0));
 				} else {
 					fill(32);
@@ -79,8 +83,8 @@ public:
 			return;
 		}
 		for (int r = 5; r >= 0; r--) {
-			if (board[drop_col][r] == -1) {
-				board[drop_col][r] = 1;
+			if (board[r][drop_col] == -1) {
+				board[r][drop_col] = 1;
 				break;
 			}
 			else {
@@ -91,7 +95,7 @@ public:
 	void restart() {
 		for (int x = 0; x < 7; x++) {
 			for (int y = 0; y < 6; y++) {
-				board[x][y] = -1;
+				board[y][x] = -1;
 			}
 		}
 		refresh();

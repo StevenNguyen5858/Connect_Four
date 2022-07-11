@@ -191,6 +191,47 @@ void circle(double x, double y, double d, int alpha) {
 	c.setOutlineColor(current_stroke);
 	main_window.draw(c);
 }
+// Draws line using vertex shape to buffer.
+class sfLine : public sf::Drawable {
+public:
+	sfLine(const sf::Vector2f& point1, const sf::Vector2f& point2)
+	: fill(sf::Color::Yellow), thickness(1.f) {
+		sf::Vector2f direction = point2 - point1;
+		sf::Vector2f unitDirection = direction / std::sqrt(direction.x * direction.x + direction.y * direction.y);
+		sf::Vector2f unitPerpendicular(-unitDirection.y, unitDirection.x);
+
+		sf::Vector2f offset = (thickness / 2.f) * unitPerpendicular;
+
+		vertices[0].position = point1 + offset;
+		vertices[1].position = point2 + offset;
+		vertices[2].position = point2 - offset;
+		vertices[3].position = point1 - offset;
+
+		for (int i = 0; i < 4; ++i) {
+			vertices[i].color = fill;
+		}
+	}
+
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const {
+		target.draw(vertices, 4, sf::Quads);
+	}
+	void setFillColor(sf::Color fill) {
+		for (int i = 0; i < 4; ++i) {
+			vertices[i].color = fill;
+		}
+	}
+
+public:
+	sf::Vertex vertices[4];
+	float thickness;
+	sf::Color fill;
+};
+void line(double x1, double y1, double x2, double y2) {
+	sfLine line(sf::Vector2f(x1*sw, y1*sh), sf::Vector2f(x2*sw, y2*sh));
+	line.setFillColor(current_fill);
+	line.thickness = current_stroke_weight;
+	main_window.draw(line);
+}
 // Returns grid based text width.
 double text_width(string str, double h) {
 	sf::Text text;
@@ -287,7 +328,7 @@ void image(sf::Image* img, int x, int y, int new_width, int new_height) {
 void dev_grid() {
 	stroke(120);
 	stroke_weight(1);
-	fill(32);
+	no_fill();
 	for (int x = 0; x < gridW + 1; x++) { // Note gridW is main display, the +1 is for partially displaying border
 		for (int y = 0; y < gridH + 1; y++) {
 			rect(x, y, 1, 1);
@@ -301,10 +342,12 @@ void gridless() {
 }
 // Image background.
 void background2() {
+	cout << "IMAGE Drawn" << endl;
 	main_window.clear(sf::Color(32, 32, 32));
 	image(&bg2, 0, 0, 32, 18);
 }
 void background4() {
+	cout << "IMAGE Drawn" << endl;
 	main_window.clear(sf::Color(32, 32, 32));
 	image(&bg4, 0, -2, 32, 24);
 }

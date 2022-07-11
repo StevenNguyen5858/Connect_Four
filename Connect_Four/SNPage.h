@@ -37,10 +37,12 @@ public:
 		cout << "Drawing " << name << endl;
 		// Clear Window display
 		main_window.clear();
-		// Draw plain background
-		(uses_dev_grid) ? dev_grid() : gridless();
 		// Draw specialized function
 		draw_func();
+		// Draw plain background
+		if (uses_dev_grid) {
+			dev_grid();
+		}
 		// Draw page elements
 		for (int i = 0; i < elements.size(); i++) {
 			elements[i]->draw_element();

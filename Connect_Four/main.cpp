@@ -72,6 +72,7 @@ void keypressed(string key) {
 // Use the above space and functions to create your program.
 int main() {
 	my_app.add_page(&SNEM);
+	cout << "W: " << sf::VideoMode::getDesktopMode().width * .75 << " H: " << sf::VideoMode::getDesktopMode().height * .75 << endl;
 	setup_window(sf::VideoMode::getDesktopMode().width*.75, sf::VideoMode::getDesktopMode().height*.75, "SNElement Application");
 	bool drawOnce = true;
 	SNEM_current_rb = &rb_dev;

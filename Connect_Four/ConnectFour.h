@@ -19,7 +19,7 @@ void temp() {}
 void function_open_multiplayer();
 void function_open_solo_play();
 void function_open_options();
-void function_refresh_title();
+void function_refresh();
 
 SNOption o_multiplayer("Multiplayer", 0, 0, 0, 0, &function_open_multiplayer);
 SNOption o_solo_play("Solo Play", 0, 0, 0, 0, &function_open_solo_play);
@@ -29,7 +29,7 @@ vector<SNOption*> title_menu_options = {
 	&o_solo_play,
 	&o_options
 };
-SNMenu m_title("Connect IV Menu", 4, 10, 0, 1, title_menu_options, &function_refresh_title);
+SNMenu m_title("Connect IV Menu", 4, 10, 0, 1, title_menu_options, &function_refresh);
 SNLabel l_connect4_title("Connect IV", false, 4, 5, 0, 2, 1.5);
 vector<SNElement*> title_elements = {
 	&l_connect4_title,
@@ -42,9 +42,8 @@ void function_start_match();
 void function_setup_game();
 void function_lobby_to_home();
 // void function_open_options() <- a duplicate use
-void function_refresh_multiplayer_lobby();
 
-SNOption o_start_match("Start Match", 0, 0, 0, 0, &function_open_multiplayer);
+SNOption o_start_match("Start Match", 0, 0, 0, 0, &function_start_match);
 SNOption o_setup_game("Setup Game", 0, 0, 0, 0, &function_open_multiplayer);
 SNOption o_spacer(" ", 0, 0, 0, 0, &temp);
 SNOption o_m_options("Options", 0, 0, 0, 0, &function_open_multiplayer);
@@ -56,7 +55,7 @@ vector<SNOption*> multiplayer_lobby_menu_options = {
 	&o_m_options,
 	&o_mlobby_to_home,
 };
-SNMenu m_multiplayer_lobby_menu("Multiplayer Menu", 4, 2, 0, 1,multiplayer_lobby_menu_options, &function_refresh_multiplayer_lobby);
+SNMenu m_multiplayer_lobby_menu("Multiplayer Menu", 4, 2, 0, 1, multiplayer_lobby_menu_options, &function_refresh);
 SNLabel l_multiplayer_lobby_title("Multiplayer", false, 4, 0, 0, 2, 1.5);
 vector<SNElement*> multiplayer_lobby_elements = {
 	&m_multiplayer_lobby_menu,
@@ -67,11 +66,10 @@ vector<SNElement*> multiplayer_lobby_elements = {
 // solo_lobby_page elements:
 // void function_start_match() <- a duplicate use
 void function_setup_solo_game();
-void function_refresh_solo_lobby();
 
-SNOption o_s_start_match("Start Match", 0, 0, 0, 0, &function_refresh_solo_lobby);
+SNOption o_s_start_match("Start Match", 0, 0, 0, 0, &function_start_match);
 SNOption o_s_setup_game("Setup Game", 0, 0, 0, 0, &function_setup_solo_game);
-SNOption o_s_options("Options", 0, 0, 0, 0, &function_refresh_solo_lobby);
+SNOption o_s_options("Options", 0, 0, 0, 0, &function_refresh);
 SNOption o_slobby_to_home("Title Screen", 0, 0, 0, 0, &function_lobby_to_home);
 vector<SNOption*> solo_lobby_menu_options = {
 	&o_s_start_match,
@@ -80,7 +78,7 @@ vector<SNOption*> solo_lobby_menu_options = {
 	&o_s_options,
 	&o_slobby_to_home,
 };
-SNMenu m_solo_lobby_menu("Solo Menu", 4, 2, 0, 1, solo_lobby_menu_options, &function_refresh_solo_lobby);
+SNMenu m_solo_lobby_menu("Solo Menu", 4, 2, 0, 1, solo_lobby_menu_options, &function_refresh);
 SNLabel l_solo_lobby_title("Solo Play", false, 4, 0, 0, 2, 1.5);
 vector<SNElement*> solo_lobby_elements = {
 	&m_solo_lobby_menu,
@@ -89,7 +87,6 @@ vector<SNElement*> solo_lobby_elements = {
 
 
 // solo_setup_page elements:
-void function_refresh();
 void function_difficulty();
 void function_player1();
 void function_color1();
@@ -105,7 +102,7 @@ SNRadio_Button rb_easy("Easy", 10, 4, 3, 1, &function_difficulty, &rb_difficulty
 SNRadio_Button rb_medium("Medium", 14, 4, 4, 1, &function_difficulty, &rb_difficulty);
 SNRadio_Button rb_hard("Hard", 19, 4, 3, 1, &function_difficulty, &rb_difficulty);
 
-SNLabel l_connect_four("Connect Four", true, 9, 0, 14, 2, 1.5);
+SNLabel l_connect_four("Connect Four", true, 9, 0.5, 14, 1.5, 1.5);
 SNLabel l_player1("Player1:", false, 10.2, 6, 4, 1, 0.6);
 SNLabel l_color1("Color:", false, 10.2, 7.5, 4, 1, 0.6);
 SNLabel l_player2("Player2:", false, 10.2, 9.5, 4, 1, 0.6);
@@ -200,13 +197,14 @@ void function_open_solo_play() {
 void function_open_options() {
 
 }
-void function_refresh_title() {
+void function_refresh() {
 	my_app.current_page->draw_page();
 }
 
+
 // multiplayer_lobby_page element functions.
 void function_start_match() {
-
+	my_app.activate_page(&play_page);
 }
 void function_setup_game() {
 
@@ -214,24 +212,15 @@ void function_setup_game() {
 void function_lobby_to_home() {
 	my_app.activate_page(&title_page);
 }
-void function_refresh_multiplayer_lobby() {
-	my_app.current_page->draw_page();
-}
 
 
 // solo_lobby_page element functions.
 void function_setup_solo_game() {
 	my_app.activate_page(&solo_setup_page);
 }
-void function_refresh_solo_lobby() {
-	my_app.current_page->draw_page();
-}
 
 
 // solo_setup_page element functions.
-void function_refresh() {
-	my_app.current_page->draw_page();
-}
 void function_difficulty() {
 	my_app.refresh_page();
 	SNRadio_Button temp_rb = **(rb_easy.current_rb);
@@ -314,9 +303,21 @@ void setup_solo_setup() {
 
 }
 void draw_solo_setup() {
+	// Accent lines
 	background2();
-	stroke_weight(2);
+	fill(255);
 	stroke(255);
+	stroke_weight(2);
+	line(0, 0.75, 4, 0.75);
+	line(4, 0.75, 4.5, 0.25);
+	line(4.5, 0.25, 27.5, 0.25);
+	line(27.5, 0.25, 28, 0.75);
+	line(28, 0.75, 32, 0.75);
+	line(0, gridH-0.75, 4, gridH-0.75);
+	line(4, gridH-0.75, 4.5, gridH-0.25);
+	line(4.5, gridH-0.25, 27.5, gridH-0.25);
+	line(27.5, gridH-0.25, 28, gridH-0.75);
+	line(28, gridH-0.75, 32, gridH-0.75);
 	fill(220);
 	rect(9, 3, 14, 13, 25);
 }
