@@ -287,7 +287,7 @@ void setup_title(){
 
 }
 void draw_title() {
-
+	background2();
 }
 
 
@@ -296,7 +296,7 @@ void setup_multiplayer_lobby() {
 
 }
 void draw_multiplayer_lobby() {
-
+	background4();
 }
 
 
@@ -305,7 +305,7 @@ void setup_solo_lobby() {
 
 }
 void draw_solo_lobby() {
-
+	background2();
 }
 
 
@@ -314,6 +314,7 @@ void setup_solo_setup() {
 
 }
 void draw_solo_setup() {
+	background2();
 	stroke_weight(2);
 	stroke(255);
 	fill(220);
@@ -326,6 +327,7 @@ void setup_play() {
 
 }
 void draw_play() {
+	background4();
 	stroke_weight(2);
 	fill(220);
 	stroke(255);

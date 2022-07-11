@@ -73,6 +73,9 @@ sf::Image icon_video;
 sf::Image radio_empty;
 sf::Image radio_full;
 
+sf::Image bg2;
+sf::Image bg4;
+
 // Sets up the basic screen dimentions, then on the front end use is setting grid units sw and sh.
 void refresh_grid() {
 	int screen_width = main_window.getSize().x;
@@ -82,6 +85,14 @@ void refresh_grid() {
 }
 void setup_window(int screen_width, int screen_height, string title) {
 	bool couldnt_load = false;
+	if (!bg2.loadFromFile("SNElement Resources/BG2.png")) {
+		sf::err() << "Couldn't load BG2\n";
+		bool couldnt_load = true;
+	}
+	if (!bg4.loadFromFile("SNElement Resources/BG4.jpg")) {
+		sf::err() << "Couldn't load BG4\n";
+		bool couldnt_load = true;
+	}
 	if (!font.loadFromFile("SNElement Resources/cour.ttf")) {
 		sf::err() << "Couldn't load cour font\n";
 		bool couldnt_load = true;
@@ -288,7 +299,15 @@ void dev_grid() {
 void gridless() {
 	main_window.clear(sf::Color(32, 32, 32));
 }
-
+// Image background.
+void background2() {
+	main_window.clear(sf::Color(32, 32, 32));
+	image(&bg2, 0, 0, 32, 18);
+}
+void background4() {
+	main_window.clear(sf::Color(32, 32, 32));
+	image(&bg4, 0, -2, 32, 24);
+}
 
 // ********************************************************************************************
 // Group2: SNElement classes : SNElement, SNButton, SNLabel, SNContainer, SNCache, SNPageand SNApp class.
