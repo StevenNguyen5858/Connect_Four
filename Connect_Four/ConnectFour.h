@@ -91,14 +91,19 @@ Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &funct
 void function_o_color1();
 void function_o_color2();
 void function_o_starting_player();
+void function_msetup_to_mlobby();
 
 SNOption o_color1("Player1 Color:", 0, 0, 0, 0, my_game.player1_color(),&function_o_color1);
-SNOption o_color2("Player2 Color:", 0, 0, 0, 0, my_game.player2_color(), &function_o_color1);
+SNOption o_color2("Player2 Color:", 0, 0, 0, 0, my_game.player2_color(), &function_o_color2);
 SNOption o_starting_player("Starting Player:", 0, 0, 0, 0, my_game.starting_player_name(), &function_o_starting_player);
+SNOption o_apply("Apply", 0, 0, 0, 0, &function_msetup_to_mlobby);
 vector<SNOption*> multiplayer_setup_menu_options = {
 	&o_color1,
 	&o_color2,
 	&o_starting_player,
+	&o_spacer,
+	&o_spacer,
+	&o_apply,
 };
 SNMenu m_multiplayer_setup_menu("Multiplayer Menu", 4, 2, 0, 1, multiplayer_setup_menu_options, &function_refresh);
 SNLabel l_multiplayer_setup_title("Setup Game", true, 9, 0.5, 14, 1.5, 1.5);
@@ -247,13 +252,24 @@ void function_setup_solo_game() {
 
 // multiplayer_setup_page element functions.
 void function_o_color1() {
-
+	my_game.player1_toggle_color();
+	o_color1.option_data = my_game.player1_color();
+	o_color2.option_data = my_game.player2_color();
+	my_app.current_page->draw_page();
 }
 void function_o_color2() {
-
+	my_game.player2_toggle_color();
+	o_color2.option_data = my_game.player2_color();
+	o_color1.option_data = my_game.player1_color();
+	my_app.current_page->draw_page();
 }
 void function_o_starting_player() {
-
+	my_game.toggle_starting_player();
+	o_starting_player.option_data = my_game.starting_player_name();
+	my_app.current_page->draw_page();
+}
+void function_msetup_to_mlobby() {
+	my_app.activate_page(&multiplayer_lobby_page);
 }
 
 
