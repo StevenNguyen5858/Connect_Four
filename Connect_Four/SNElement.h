@@ -457,6 +457,11 @@ public:
 class SNOption : public SNButton {
 	// Access specifier:
 public:
+	double x2 = 0;
+	double w2 = 0;
+	double option_width = 0;
+	double option_data_width = 0;
+	string option_data = "";
 
 	// Default Constructor:
 	SNOption(){}
@@ -465,18 +470,52 @@ public:
 	: SNButton(name, x, y, w, h, function){
 		this->type = "SNOption";
 	}
+	SNOption(string name, double x, double y, double w, double h, string option_data, void (*function)())
+		: SNButton(name, x, y, w, h, function) {
+		this->type = "SNOption";
+		this->option_data = option_data;
+	}
 
 	// Methods:
-	void set_box(double x, double y, double w, double h) { 
+	void set_box_part1(double x, double y, double h) {
 		//SNOptions are intended to be sized post object initialization as apart of a SNMenu object.
 		this->x = x;
 		this->y = y;
-		this->w = w;
 		this->h = h;
 	}
+	double width_func() { 
+		// text_width cannot be computed in constructors. Run after set_box
+		return (text_width(name, 0.8)) + 0.4;
+	}
+	void set_box_part2(double option_width) {
+		//SNOptions are intended to be sized post object initialization as apart of a SNMenu object.
+		this->option_width = option_width;
+		this->x2 = x + option_width + 2;
+		cout << "LARGEST OPTION W" << option_width << ":" << this->option_width << endl;
+	}
+	double data_width_func() {
+		// text_width cannot be computed in constructors. Run after set_box
+		return (text_width(option_data, 0.8)) + 0.4;
+	}
+	void set_box_part3(double option_data_width) {
+		//SNOptions are intended to be sized post object initialization as apart of a SNMenu object.
+		this->option_data_width = option_data_width;
+		if (option_data == "") {
+			this->w = this->option_width;
+			cout << "IF" << endl;
+		}
+		else {
+			this->w = (option_data_width + x2) - x;
+			cout << "ELSE" << option_data_width << ":" << x2 << endl;
+		}
+	}
+
 	void draw_element() {
 		// Coloring and styling is intended to occur from SNMenu object.
 		y_centered_text(name, x+0.2, y, h, 0.8);
+		if (option_data != "") {
+			y_centered_text(option_data, x2 + 0.2, y, h, 0.8);
+		}
 	}
 };
 
@@ -513,18 +552,34 @@ public:
 
 	bool updated_once = false;
 	void resize_update() {
+		// Set proper rect for options.
+		for (int i = 0; i < options.size(); i++) {
+			options[i]->set_box_part1(x, y + i, option_h);
+		}
 		// Find largest width of option, for menu hitbox.
 		double largest_w = 0;
 		for (int i = 0; i < options.size(); i++) {
 			if (text_width(options[i]->name, 0.8) > largest_w) {
-				largest_w = text_width(options[i]->name, 0.8);
+				largest_w = options[i]->width_func();
 			}
 		}
-		this->w = largest_w+0.4;
 		// Set proper rect for options.
 		for (int i = 0; i < options.size(); i++) {
-			options[i]->set_box(x, y + i, w, option_h);
+			options[i]->set_box_part2(largest_w);
 		}
+		// Find largest width of option_data, for menu hitbox.
+		double largest_data_w = 0;
+		for (int i = 0; i < options.size(); i++) {
+			if (text_width(options[i]->option_data, 0.8) > largest_data_w) {
+				largest_data_w = options[i]->data_width_func();
+			}
+		}
+		// Set proper rect for options.
+		for (int i = 0; i < options.size(); i++) {
+			options[i]->set_box_part3(largest_data_w);
+		}
+		this->w = options[0]->w;
+		
 		updated_once = true;
 	}
 	void draw_element() {
@@ -533,7 +588,7 @@ public:
 		}
 		stroke(255);
 		no_fill();
-		//rect(x, y, w, h);
+	    //rect(x, y, w, h);
 		for (int i = 0; i < options.size(); i++) {
 			if (options[i]->name == " " || options[i]->name == "") {
 				continue;
@@ -577,6 +632,7 @@ public:
 		}
 		if (key == "ENTER") {
 			options[selected_option_pos]->function();
+			cout << "ENTER " << options[selected_option_pos]->name << " Selected." << endl;
 		}
 		refresh();
 	}

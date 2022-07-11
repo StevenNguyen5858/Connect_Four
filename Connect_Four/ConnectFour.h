@@ -44,7 +44,7 @@ void function_lobby_to_home();
 // void function_open_options() <- a duplicate use
 
 SNOption o_start_match("Start Match", 0, 0, 0, 0, &function_start_match);
-SNOption o_setup_game("Setup Game", 0, 0, 0, 0, &function_open_multiplayer);
+SNOption o_setup_game("Setup Game", 0, 0, 0, 0, &function_setup_game);
 SNOption o_spacer(" ", 0, 0, 0, 0, &temp);
 SNOption o_m_options("Options", 0, 0, 0, 0, &function_open_multiplayer);
 SNOption o_mlobby_to_home("Title Screen", 0, 0, 0, 0, &function_lobby_to_home);
@@ -86,6 +86,27 @@ vector<SNElement*> solo_lobby_elements = {
 };
 
 
+Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh);
+// multiplayer_setup_page elements:
+void function_o_color1();
+void function_o_color2();
+void function_o_starting_player();
+
+SNOption o_color1("Player1 Color:", 0, 0, 0, 0, my_game.player1_color(),&function_o_color1);
+SNOption o_color2("Player2 Color:", 0, 0, 0, 0, my_game.player2_color(), &function_o_color1);
+SNOption o_starting_player("Starting Player:", 0, 0, 0, 0, my_game.starting_player_name(), &function_o_starting_player);
+vector<SNOption*> multiplayer_setup_menu_options = {
+	&o_color1,
+	&o_color2,
+	&o_starting_player,
+};
+SNMenu m_multiplayer_setup_menu("Multiplayer Menu", 4, 2, 0, 1, multiplayer_setup_menu_options, &function_refresh);
+SNLabel l_multiplayer_setup_title("Setup Game", true, 9, 0.5, 14, 1.5, 1.5);
+vector<SNElement*> multiplayer_setup_elements = {
+	&m_multiplayer_setup_menu,
+	&l_multiplayer_setup_title,
+};
+
 // solo_setup_page elements:
 void function_difficulty();
 void function_player1();
@@ -94,8 +115,6 @@ void function_player2();
 void function_color2();
 void function_starting_player();
 void function_open_play();
-
-Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh);
 
 SNRadio_Button* rb_difficulty;
 SNRadio_Button rb_easy("Easy", 10, 4, 3, 1, &function_difficulty, &rb_difficulty);
@@ -172,6 +191,12 @@ void setup_solo_lobby();
 void draw_solo_lobby();
 SNPage solo_lobby_page("Solo Lobby Page", solo_lobby_elements, &setup_solo_lobby, &draw_solo_lobby);
 
+// multiplayer_setup_page declarations;
+void setup_multiplayer_setup();
+void draw_multiplayer_setup();
+SNPage multiplayer_setup_page("Multiplayer Setup Page", multiplayer_setup_elements, &setup_multiplayer_setup, &draw_multiplayer_setup);
+
+
 // setup_solo_page declarations
 void setup_solo_setup();
 void draw_solo_setup();
@@ -207,7 +232,7 @@ void function_start_match() {
 	my_app.activate_page(&play_page);
 }
 void function_setup_game() {
-
+	my_app.activate_page(&multiplayer_setup_page);
 }
 void function_lobby_to_home() {
 	my_app.activate_page(&title_page);
@@ -217,6 +242,18 @@ void function_lobby_to_home() {
 // solo_lobby_page element functions.
 void function_setup_solo_game() {
 	my_app.activate_page(&solo_setup_page);
+}
+
+
+// multiplayer_setup_page element functions.
+void function_o_color1() {
+
+}
+void function_o_color2() {
+
+}
+void function_o_starting_player() {
+
 }
 
 
@@ -272,6 +309,20 @@ void function_open_home() {
 // Group4 : SNEPages' function initializations. Pages: title_page, solo_setup_page, play_page
 
 // title_page SNPage functions
+void helper_line_accent() {
+	fill(255);
+	stroke_weight(2);
+	line(0, 0.75, 4, 0.75);
+	line(4, 0.75, 4.5, 0.25);
+	line(4.5, 0.25, 27.5, 0.25);
+	line(27.5, 0.25, 28, 0.75);
+	line(28, 0.75, 32, 0.75);
+	line(0, gridH - 0.75, 4, gridH - 0.75);
+	line(4, gridH - 0.75, 4.5, gridH - 0.25);
+	line(4.5, gridH - 0.25, 27.5, gridH - 0.25);
+	line(27.5, gridH - 0.25, 28, gridH - 0.75);
+	line(28, gridH - 0.75, 32, gridH - 0.75);
+}
 void setup_title(){
 
 }
@@ -298,26 +349,27 @@ void draw_solo_lobby() {
 }
 
 
+// multiplayer_setup_page SNPage functions
+void setup_multiplayer_setup() {
+
+}
+void draw_multiplayer_setup() {
+	background2();
+	// Accent lines
+	helper_line_accent();
+}
+
+
 // solo_setup_page SNPage functions
 void setup_solo_setup() {
 
 }
 void draw_solo_setup() {
-	// Accent lines
 	background2();
-	fill(255);
+	// Accent lines
+	helper_line_accent();
+	// Center box
 	stroke(255);
-	stroke_weight(2);
-	line(0, 0.75, 4, 0.75);
-	line(4, 0.75, 4.5, 0.25);
-	line(4.5, 0.25, 27.5, 0.25);
-	line(27.5, 0.25, 28, 0.75);
-	line(28, 0.75, 32, 0.75);
-	line(0, gridH-0.75, 4, gridH-0.75);
-	line(4, gridH-0.75, 4.5, gridH-0.25);
-	line(4.5, gridH-0.25, 27.5, gridH-0.25);
-	line(27.5, gridH-0.25, 28, gridH-0.75);
-	line(28, gridH-0.75, 32, gridH-0.75);
 	fill(220);
 	rect(9, 3, 14, 13, 25);
 }

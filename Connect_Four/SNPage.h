@@ -36,7 +36,7 @@ public:
 	void draw_page() {
 		cout << "Drawing " << name << endl;
 		// Clear Window display
-		main_window.clear();
+		main_window.clear(sf::Color(32,32,32));
 		// Draw specialized function
 		draw_func();
 		// Draw plain background
