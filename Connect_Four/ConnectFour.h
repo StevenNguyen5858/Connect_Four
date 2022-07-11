@@ -12,21 +12,40 @@
 *	Group4: SNEPages' function initializations */
 
 // *******************************************************************************************************
-// Group1: SNElement declarations
+// Group1: SNElement declarations. Pages: title_page, solo_setup_page, play_page
 void temp() {}
+
+// title_page elements:
+void function_open_multiplayer();
+void function_open_solo_play();
+void function_open_options();
+void function_refresh_title();
+
+SNOption o_multiplayer("Multiplayer", 0, 0, 0, 0, &function_open_multiplayer);
+SNOption o_solo_play("Solo Play", 0, 0, 0, 0, &function_open_solo_play);
+SNOption o_options("Options", 0, 0, 0, 0, &function_open_options);
+vector<SNOption*> title_menu_options = {
+	&o_multiplayer,
+	&o_solo_play,
+	&o_options
+};
+SNMenu m_title("Connect IV menu", 4, 10, 0, 1, title_menu_options, &function_refresh_title);
+SNLabel l_connect4_title("Connect IV", false, 4, 5, 0, 2, 1.5);
+vector<SNElement*> title_elements = {
+	&l_connect4_title,
+	&m_title,
+};
+
+
+// solo_setup_page elements:
 void function_refresh();
-
 void function_difficulty();
-void function_open_play();
-void function_open_home();
-
 void function_player1();
 void function_color1();
 void function_player2();
 void function_color2();
 void function_starting_player();
-
-void function_restart();
+void function_open_play();
 
 Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh);
 
@@ -35,12 +54,12 @@ SNRadio_Button rb_easy("Easy", 10, 4, 3, 1, &function_difficulty, &rb_difficulty
 SNRadio_Button rb_medium("Medium", 14, 4, 4, 1, &function_difficulty, &rb_difficulty);
 SNRadio_Button rb_hard("Hard", 19, 4, 3, 1, &function_difficulty, &rb_difficulty);
 
-SNLabel l_connect_four("Connect Four", true, 9, .5, 14, 1.5);
-SNLabel l_player1("Player1:", false, 10.2, 6.1, 4, 0.6);
-SNLabel l_color1("Color:", false, 10.2, 7.6, 4, 0.6);
-SNLabel l_player2("Player2:", false, 10.2, 9.6, 4, 0.6);
-SNLabel l_color2("Color:", false, 10.2, 11.1, 4, 0.6);
-SNLabel l_starting_player("Starting P:", false, 10.2, 12.6, 4, 0.6);
+SNLabel l_connect_four("Connect Four", true, 9, 0, 14, 2, 1.5);
+SNLabel l_player1("Player1:", false, 10.2, 6, 4, 1, 0.6);
+SNLabel l_color1("Color:", false, 10.2, 7.5, 4, 1, 0.6);
+SNLabel l_player2("Player2:", false, 10.2, 9.5, 4, 1, 0.6);
+SNLabel l_color2("Color:", false, 10.2, 11, 4, 1, 0.6);
+SNLabel l_starting_player("Starting P:", false, 10.2, 12.5, 4, 1, 0.6);
 
 SNButton b_player1(my_game.player1_type(), 16, 6, 6, 1, &function_player1);
 SNButton b_color1(my_game.player1_color(), 16, 7.5, 6, 1, &function_color1);
@@ -48,7 +67,7 @@ SNButton b_player2(my_game.player2_type(), 16, 9.5, 6, 1, &function_player2);
 SNButton b_color2(my_game.player2_color(), 16, 11, 6, 1, &function_color2);
 SNButton b_starting_player(my_game.starting_player_name(), 16, 12.5, 6, 1, &function_starting_player);
 SNButton b_play("Play", 14.5, 14, 3, 1, &function_open_play);
-vector<SNElement*> main_elements = {
+vector<SNElement*> solo_setup_elements = {
 	&rb_easy,
 	&rb_medium,
 	&rb_hard,
@@ -66,11 +85,15 @@ vector<SNElement*> main_elements = {
 	&b_play
 };
 
-SNLabel l_game_log("GAME LOG", true, .9, 4, 6, .8);
+
+// play_page elements:
+void function_open_home();
+void function_restart();
+
+SNLabel l_game_log("GAME LOG", true, .9, 4, 6, 1, 0.8);
 SNButton b_undo_move("Undo Move", 25, 4, 6, 1, &temp);
 SNButton b_restart_game("Restart Game", 25, 6, 6, 1, &function_restart);
 SNButton b_home_screen("Home Screen", 25, 8, 6, 1, &function_open_home);
-
 vector<SNElement*> play_elements = {
 	&l_connect_four,
 	&l_game_log,
@@ -82,23 +105,45 @@ vector<SNElement*> play_elements = {
 
 
 // *******************************************************************************************************
-// Group2 : SNPage declarations(SNElements are in pages)
-void setup_main();
-void draw_main();
+// Group2 : SNPage declarations(SNElements are in pages). Pages: title_page, solo_setup_page, play_page
+
+// title_page declarations
+void setup_title();
+void draw_title();
+SNPage title_page("Title Page", title_elements, &setup_title, &draw_title);
+
+
+// setup_solo_page declarations
+void setup_solo_setup();
+void draw_solo_setup();
+SNPage solo_setup_page("Solo Setup Page", solo_setup_elements, &setup_solo_setup, &draw_solo_setup);
+
+
+// play_page declarations
 void setup_play();
 void draw_play();
-
-SNPage main_page("Main Page", main_elements, &setup_main, &draw_main);
 SNPage play_page("Play Page", play_elements, &setup_play, &draw_play);
 
 
 // *******************************************************************************************************
-// Group3 : SNElements' function initializations
-void function_open_play() {
-	my_app.activate_page(&play_page);
+// Group3 : SNElements' function initializations. Pages: title_page, solo_setup_page, play_page
+
+// title_page element functions.
+void function_open_multiplayer() {
+
+}
+void function_open_solo_play() {
+
+}
+void function_open_options() {
+
+}
+void function_refresh_title() {
+	my_app.current_page->draw_page();
 }
 
-// Main page settings functions.
+
+// solo_setup_page element functions.
 void function_refresh() {
 	my_app.current_page->draw_page();
 }
@@ -134,28 +179,46 @@ void function_starting_player() {
 	b_starting_player.name = my_game.starting_player_name();
 	my_app.current_page->draw_page();
 }
+void function_open_play() {
+	my_app.activate_page(&play_page);
+}
 
-// Play page functions.
+
+// play_page element functions.
 void function_restart() {
 	my_game.restart();
 }
 void function_open_home() {
 	my_game.restart();
-	my_app.activate_page(&main_page);
+	my_app.activate_page(&solo_setup_page);
 }
 
 
 // *******************************************************************************************************
-// Group4 : SNEPages' function initializations 
-void setup_main() {
+// Group4 : SNEPages' function initializations. Pages: title_page, solo_setup_page, play_page
+
+// title_page SNPage functions
+void setup_title(){
 
 }
-void draw_main() {
+void draw_title() {
+
+}
+
+
+// solo_setup_page SNPage functions
+void setup_solo_setup() {
+
+}
+void draw_solo_setup() {
 	stroke_weight(2);
 	stroke(255);
 	fill(220);
 	rect(9, 3, 14, 13, 25);
 }
+
+
+// play_page SNPage functions
 void setup_play() {
 
 }

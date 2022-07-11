@@ -81,15 +81,41 @@ void refresh_grid() {
 	sh = screen_height / gridH;
 }
 void setup_window(int screen_width, int screen_height, string title) {
-	font.loadFromFile("SNElement Resources/cour.ttf");
-	icon_image.loadFromFile("SNElement Resources/ImageIcon.png");
-	icon_sound.loadFromFile("SNElement Resources/SoundIcon.png");
-	icon_text.loadFromFile("SNElement Resources/TextIcon.png");
-	icon_video.loadFromFile("SNElement Resources/VideoIcon.png");
+	bool couldnt_load = false;
+	if (!font.loadFromFile("SNElement Resources/cour.ttf")) {
+		sf::err() << "Couldn't load cour font\n";
+		bool couldnt_load = true;
+	}
+	if (!icon_image.loadFromFile("SNElement Resources/ImageIcon.png")) {
+		sf::err() << "Couldn't load ImageIcon\n";
+		bool couldnt_load = true;
+	}
+	if (!icon_sound.loadFromFile("SNElement Resources/SoundIcon.png")) {
+		sf::err() << "Couldn't load SoundIcon\n";
+		bool couldnt_load = true;
+	}
+	if (!icon_text.loadFromFile("SNElement Resources/TextIcon.png")) {
+		sf::err() << "Couldn't load TextIcon\n";
+		bool couldnt_load = true;
+	}
+	if (!icon_video.loadFromFile("SNElement Resources/VideoIcon.png")) {
+		sf::err() << "Couldn't load VideoIcon\n";
+		bool couldnt_load = true;
+	}
 
-	radio_empty.loadFromFile("SNElement Resources/RadioButtonEmpty.png");
-	radio_full.loadFromFile("SNElement Resources/RadioButtonFull.png");
-
+	if (!radio_empty.loadFromFile("SNElement Resources/RadioButtonEmpty.png")) {
+		sf::err() << "Couldn't load RadioEmptyIcon\n";
+		bool couldnt_load = true;
+	}
+	if (!radio_full.loadFromFile("SNElement Resources/RadioButtonFull.png")) {
+		sf::err() << "Couldn't load RadioFullIcon\n";
+		bool couldnt_load = true;
+	}
+	
+	if (couldnt_load) {
+		sf::err() << "Application resources were not all loaded. Try repairing or reinstalling your application.\n";
+	}
+	
 	main_window.create(sf::VideoMode(screen_width, screen_height), title);
 	refresh_grid();
 }
@@ -154,32 +180,6 @@ void circle(double x, double y, double d, int alpha) {
 	c.setOutlineColor(current_stroke);
 	main_window.draw(c);
 }
-// Draws text to buffer.
-void text(string str, double x, double y, double h) { 
-	sf::Text text;
-
-	text.setFont(font);
-	text.setStyle(sf::Text::Bold);
-	text.setString(str);
-	text.setCharacterSize(h * sh);
-	text.setPosition(sf::Vector2f(x * sw, y * sh - (h * sh * .1)));
-	text.setFillColor(current_fill);
-	main_window.draw(text);
-}
-// Draws centered text within a given x, y, w and h to buffer.
-void centered_text(string str, double x, double y, double w, double h) { 
-	sf::Text text;
-
-	text.setFont(font);
-	text.setStyle(sf::Text::Bold);
-	text.setString(str);
-	text.setCharacterSize(h * sh);
-	int text_w = text.getGlobalBounds().width;
-	int centered_x = (x * sw) + ((w * sw) - text_w) / 2;
-	text.setPosition(sf::Vector2f(centered_x, y*sh));
-	text.setFillColor(current_fill);
-	main_window.draw(text);
-}
 // Returns grid based text width.
 double text_width(string str, double h) {
 	sf::Text text;
@@ -190,6 +190,56 @@ double text_width(string str, double h) {
 	text.setCharacterSize(h * sh);
 	double text_w = text.getGlobalBounds().width / sw;
 	return text_w;
+}
+// Draws text to buffer.
+void text(string str, double x, double y, double h) {
+	sf::Text text;
+	// Text Style:
+	text.setFont(font);
+	text.setStyle(sf::Text::Bold);
+	text.setFillColor(current_fill);
+	text.setString(str);
+	text.setCharacterSize(h * sh);
+	// Text Positioning:
+	text.setPosition(sf::Vector2f(x * sw, y * sh));
+
+	main_window.draw(text);
+}
+// Draws y centered text within a given x, y, h and text_h to buffer.
+void y_centered_text(string str, double x, double y, double h, double text_h) {
+	sf::Text text;
+	// Text Style:
+	text.setFont(font);
+	text.setStyle(sf::Text::Bold);
+	text.setFillColor(current_fill);
+	text.setString(str);
+	text.setCharacterSize(text_h * sh);
+	// Text Positioning:
+	double centered_offset_y = ((h * sh) - text.getGlobalBounds().height) / 2;
+	int centered_y = (y * sh) + centered_offset_y;
+	text.setOrigin(text.getGlobalBounds().left, text.getGlobalBounds().top);
+	text.setPosition(sf::Vector2f(int(x * sw), centered_y));
+
+	main_window.draw(text);
+}
+// Draws x and y centered text within a given x, y, w, h and text_h to buffer.
+void all_centered_text(string str, double x, double y, double w, double h, double text_h) { 
+	sf::Text text;
+	// Text Style:
+	text.setFont(font);
+	text.setStyle(sf::Text::Bold);
+	text.setFillColor(current_fill);
+	text.setString(str);
+	text.setCharacterSize(text_h * sh);
+	// Text Positioning:
+	double centered_offset_x = ((w * sw) - (text.getGlobalBounds().width)) / 2;
+	int centered_x = (x * sw) + centered_offset_x;
+	double centered_offset_y = ((h * sh) - text.getGlobalBounds().height) / 2;
+	int centered_y = (y * sh) + centered_offset_y;
+	text.setOrigin(text.getGlobalBounds().left, text.getGlobalBounds().top);
+	text.setPosition(sf::Vector2f(centered_x, centered_y));
+
+	main_window.draw(text);
 }
 // Fills buffer with sf::Color.
 void background(sf::Color color) {
@@ -278,19 +328,19 @@ class SNLabel : public SNElement {
 	// Access specifier:
 public:
 	string str;
-	int height;
+	double text_h;
 	bool isCentered;
 
 	// Default Constructor:
 	SNLabel() {
 	}
 	// Parameterized
-	SNLabel(string str, bool isCentered, double x, double y, double w, double h)
+	SNLabel(string str, bool isCentered, double x, double y, double w, double h, double text_h)
 		: SNElement(name, x, y, w, h) {
+		this->type = "SNLabel";
+		this->text_h = text_h;
 		this->str = str;
 		this->isCentered = isCentered;
-		this->height = h;
-		this->type = "SNLabel";
 	}
 
 	void draw_element() { // Overloading virtual parent func.
@@ -298,10 +348,10 @@ public:
 		fill(255);
 		stroke(255);
 		if (isCentered) {
-			centered_text(str, x, y, w, h);
+			all_centered_text(str, x, y, w, h, text_h);
 		}
 		else {
-			text(str, x, y, h);
+			y_centered_text(str, x, y, h, text_h);
 		}
 	}
 };
@@ -337,7 +387,118 @@ public:
 		stroke_weight(2);
 		rect(x, y, w, h, 25);
 		fill(255);
-		text(name, x+0.2, y+(h*0.15), h*.6);
+		y_centered_text(name, x+0.2, y, h, h*.6);
+	}
+};
+
+
+class SNOption : public SNButton {
+	// Access specifier:
+public:
+
+	// Default Constructor:
+	SNOption(){}
+	// Parameterized Constructor:
+	SNOption(string name, double x, double y, double w, double h, void (*function)())
+	: SNButton(name, x, y, w, h, function){
+		this->type = "SNOption";
+	}
+
+	// Methods:
+	void set_box(double x, double y, double w, double h) { 
+		//SNOptions are intended to be sized post object initialization as apart of a SNMenu object.
+		this->x = x;
+		this->y = y;
+		this->w = w;
+		this->h = h;
+	}
+	void draw_element() {
+		// Coloring and styling is intended to occur from SNMenu object.
+		y_centered_text(name, x+0.2, y, h, 0.8);
+	}
+};
+
+
+class SNMenu : public SNElement {
+	// Access specifier:
+public:
+	vector<SNOption*> options;
+	int selected_option_pos = 0;
+	int num_options = 0;
+	double option_h = 0;
+	void (*refresh)();
+	
+
+	// Default Constructor:
+	SNMenu() {}
+	// Parameterized Constructor:
+	SNMenu(string name, double x, double y, double w, double option_h, vector<SNOption*> options, void (*refresh)()){
+		this->type = "SNMenu";
+		this->name = name;
+		this->x = x;
+		this->y = y;
+		this->w = w;
+		this->option_h = option_h;
+		this->h = options.size()*option_h;
+		this->options = options;
+		this->refresh = refresh;
+		for (int i = 0; i < options.size(); i++) {
+			if (options[i]->name != " " || options[i]->name != "") {
+				num_options++;
+			}
+		}
+	}
+
+	bool updated_once = false;
+	void resize_update() {
+		// Find largest width of option, for menu hitbox.
+		double largest_w = 0;
+		for (int i = 0; i < options.size(); i++) {
+			if (text_width(options[i]->name, 0.8) > largest_w) {
+				largest_w = text_width(options[i]->name, 0.8);
+			}
+		}
+		this->w = largest_w+0.4;
+		// Set proper rect for options.
+		for (int i = 0; i < options.size(); i++) {
+			options[i]->set_box(x, y + i, w, option_h);
+		}
+		updated_once = true;
+	}
+	void draw_element() {
+		if (updated_once == false) {
+			resize_update();
+		}
+		stroke(255);
+		no_fill();
+		rect(x, y, w, h);
+		for (int i = 0; i < options.size(); i++) {
+			if (i == selected_option_pos) {
+				fill(sf::Color(218, 119, 48));
+			}
+			else {
+				fill(255);
+			}
+			options[i]->draw_element();
+		}
+	}
+	void find_option(double grid_x, double grid_y) {
+		for (int i = 0; i < options.size(); i++) {
+			SNOption *e = options[i];
+			if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
+				e->function();
+			}
+		}
+	}
+	void navigate(string key) {
+		if (key == "w" && selected_option_pos > 0) {
+			selected_option_pos--;
+
+		}
+		if (key == "s" && selected_option_pos < num_options) {
+			selected_option_pos++;
+		}
+		refresh();
 	}
 };
 
@@ -373,7 +534,7 @@ public:
 		stroke_weight(2);
 		rect(x, y, w, h, 25);
 		fill(255);
-		text(name, x + 0.2, y + (h * 0.15), h * .6);
+		y_centered_text(name, x + 0.2, y, h, h * 0.6);
 	}
 };
 
@@ -405,7 +566,7 @@ public:
 		}
 		fill(255);
 		stroke_weight(2);
-		text(name, x + 1.2, y + .08, 0.6);
+		y_centered_text(name, x + 1.2, y, h, 0.6);
 	}
 	void radio_switch() {
 		SNRadio_Button* t = *current_rb;
@@ -446,7 +607,7 @@ public:
 		double title_w = ceil(text_width(title, 0.7)); // title
 		rect(x + title_w, y + .5, w - title_w, 0); // title line -----------------------------
 		fill(255);
-		centered_text(title, x, y, title_w, 0.6);
+		all_centered_text(title, x, y, title_w, 1, 0.6);
 		for (int i = 0; i < elements.size(); i++) {
 			elements[i]->draw_element();
 		}

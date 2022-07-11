@@ -37,9 +37,10 @@
 
 // Runs once at start of program.
 void setup() {
-	my_app.add_page(&main_page);
+	my_app.add_page(&title_page);
+	my_app.add_page(&solo_setup_page);
 	my_app.add_page(&play_page);
-	my_app.current_page = &main_page;
+	my_app.current_page = &SNEM;
 	rb_difficulty = &rb_easy;
 	rb_easy.is_selected = true;
 }
@@ -58,6 +59,10 @@ void mouse_pressed(double mouse_x, double mouse_y) {
 // Runs when mouse is released.
 void mouse_released(double mouse_x, double mouse_y) {
 
+}
+
+void keypressed(string key) {
+	my_app.current_page->handle_keys(key);
 }
 
 
@@ -101,6 +106,25 @@ int main() {
 				double mouse_x = sf::Mouse::getPosition(main_window).x;
 				double mouse_y = sf::Mouse::getPosition(main_window).y;
 				mouse_released(mouse_x, mouse_y);
+			}
+			if (event.type == sf::Event::KeyPressed) {
+				string key = " ";
+				if (event.key.code == sf::Keyboard::Escape) {
+					main_window.close();
+				}
+				if (event.key.code == 22) {
+					key = "w";
+				}
+				if (event.key.code == 0) {
+					key = "a";
+				}
+				if (event.key.code == 18) {
+					key = "s";
+				}
+				if (event.key.code == 3) {
+					key = "d";
+				}
+				keypressed(key);
 			}
 		}
 		draw();

@@ -2,11 +2,13 @@
 #include "SNElement.h"
 #include "Game_Controller.h"
 
-bool uses_dev_grid = false;
+bool uses_dev_grid = true;
 class SNPage {
 	// Access specifier:
 public:
 	string name;
+	SNMenu *page_menu;
+	bool has_page_menu = false;
 	vector<SNElement*> elements;
 	vector<SNElement*> post_elements;
 	void (*draw_func)();
@@ -21,19 +23,25 @@ public:
 		this->elements = elements;
 		this->page_setup = page_setup;
 		this->draw_func = draw_func;
+		for (int i = 0; i < elements.size(); i++) {
+			if (elements[i]->type == "SNMenu") {
+				SNMenu* menu_ptr = dynamic_cast<SNMenu*>(elements[i]);
+				page_menu = menu_ptr;
+				has_page_menu = true;
+				break;
+			}
+		}
 	}
 
 	void draw_page() {
-		main_window.clear();
-		// Basic background
-		if (uses_dev_grid) {
-			dev_grid();
-		}
-		else {
-			gridless();
-		}
 		cout << "Drawing " << name << endl;
+		// Clear Window display
+		main_window.clear();
+		// Draw plain background
+		(uses_dev_grid) ? dev_grid() : gridless();
+		// Draw specialized function
 		draw_func();
+		// Draw page elements
 		for (int i = 0; i < elements.size(); i++) {
 			elements[i]->draw_element();
 		}
@@ -41,6 +49,7 @@ public:
 			post_elements[i]->draw_element();
 		}
 		cout << endl;
+		// Push buffer to Window display
 		main_window.display();
 	}
 
@@ -53,6 +62,13 @@ public:
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					SNButton* button_ptr = dynamic_cast<SNButton*>(e);
 					button_ptr->function();
+					cout << e->name << " has been pressed." << endl;
+				}
+			}
+			if (e->type == "SNMenu") {
+				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
+					SNMenu* menu_ptr = dynamic_cast<SNMenu*>(e);
+					menu_ptr->find_option(grid_x, grid_y);
 					cout << e->name << " has been pressed." << endl;
 				}
 			}
@@ -86,6 +102,13 @@ public:
 					cout << e->name << " has been pressed." << endl;
 				}
 			}
+			if (e->type == "SNMenu") {
+				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
+					SNMenu* menu_ptr = dynamic_cast<SNMenu*>(e);
+					menu_ptr->find_option(grid_x, grid_y);
+					cout << e->name << " has been pressed." << endl;
+				}
+			}
 			if (e->type == "SNRadio_Button") {
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					SNRadio_Button* button_ptr = dynamic_cast<SNRadio_Button*>(e);
@@ -106,6 +129,11 @@ public:
 					cout << e->name << " has been pressed." << endl;
 				}
 			}
+		}
+	}
+	void handle_keys(string key) {
+		if (has_page_menu) {
+			page_menu->navigate(key);
 		}
 	}
 };
@@ -157,8 +185,8 @@ void function_open_page(int pos);
 void function_rb_dev();
 void function_rb_plain();
 
-SNLabel l_SNEM_title("SNElements Main:", false, 1, 0, text_width("SNElements Main", 2), 1.5);
-SNLabel l_sidebar_title("View Options:", true, 25, 0.1, 7, .6);
+SNLabel l_SNEM_title("SNElements Main:", false, 1, 0, text_width("SNElements Main", 2), 2, 1.5);
+SNLabel l_sidebar_title("View Options:", true, 25, 0, 7, 1, 0.6);
 SNRadio_Button* SNEM_current_rb;
 SNRadio_Button rb_dev("Developer Grid", 25, 2, 7, 1, &function_rb_dev, &SNEM_current_rb);
 SNRadio_Button rb_plain("No Grid", 25, 3, 7, 1, &function_rb_plain, &SNEM_current_rb);
