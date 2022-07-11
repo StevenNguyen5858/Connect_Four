@@ -473,6 +473,9 @@ public:
 		no_fill();
 		rect(x, y, w, h);
 		for (int i = 0; i < options.size(); i++) {
+			if (options[i]->name == " " || options[i]->name == "") {
+				continue;
+			}
 			if (i == selected_option_pos) {
 				fill(sf::Color(218, 119, 48));
 			}
@@ -493,10 +496,25 @@ public:
 	void navigate(string key) {
 		if (key == "w" && selected_option_pos > 0) {
 			selected_option_pos--;
+			for (int x = selected_option_pos; x > 0; x--) {
+				if (options[x]->name != " " && options[x]->name != "") {
+					break;
+				}
+				selected_option_pos--;
+			}
 
 		}
-		if (key == "s" && selected_option_pos < num_options) {
+		if (key == "s" && selected_option_pos < num_options-1) {
 			selected_option_pos++;
+			for (int x = selected_option_pos; x < options.size()-1; x++) {
+				if (options[x]->name != " " && options[x]->name != "") {
+					break;
+				}
+				selected_option_pos++;
+			}
+		}
+		if (key == "ENTER") {
+			options[selected_option_pos]->function();
 		}
 		refresh();
 	}

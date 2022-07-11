@@ -29,11 +29,62 @@ vector<SNOption*> title_menu_options = {
 	&o_solo_play,
 	&o_options
 };
-SNMenu m_title("Connect IV menu", 4, 10, 0, 1, title_menu_options, &function_refresh_title);
+SNMenu m_title("Connect IV Menu", 4, 10, 0, 1, title_menu_options, &function_refresh_title);
 SNLabel l_connect4_title("Connect IV", false, 4, 5, 0, 2, 1.5);
 vector<SNElement*> title_elements = {
 	&l_connect4_title,
 	&m_title,
+};
+
+
+// multiplayer_lobby_page elements:
+void function_start_match();
+void function_setup_game();
+void function_lobby_to_home();
+// void function_open_options() <- a duplicate use
+void function_refresh_multiplayer_lobby();
+
+SNOption o_start_match("Start Match", 0, 0, 0, 0, &function_open_multiplayer);
+SNOption o_setup_game("Setup Game", 0, 0, 0, 0, &function_open_multiplayer);
+SNOption o_spacer(" ", 0, 0, 0, 0, &temp);
+SNOption o_m_options("Options", 0, 0, 0, 0, &function_open_multiplayer);
+SNOption o_mlobby_to_home("Title Screen", 0, 0, 0, 0, &function_lobby_to_home);
+vector<SNOption*> multiplayer_lobby_menu_options = {
+	&o_start_match,
+	&o_setup_game,
+	&o_spacer,
+	&o_m_options,
+	&o_mlobby_to_home,
+};
+SNMenu m_multiplayer_lobby_menu("Multiplayer Menu", 4, 2, 0, 1,multiplayer_lobby_menu_options, &function_refresh_multiplayer_lobby);
+SNLabel l_multiplayer_lobby_title("Multiplayer", false, 4, 0, 0, 2, 1.5);
+vector<SNElement*> multiplayer_lobby_elements = {
+	&m_multiplayer_lobby_menu,
+	&l_multiplayer_lobby_title,
+};
+
+
+// solo_lobby_page elements:
+// void function_start_match() <- a duplicate use
+void function_setup_solo_game();
+void function_refresh_solo_lobby();
+
+SNOption o_s_start_match("Start Match", 0, 0, 0, 0, &function_refresh_solo_lobby);
+SNOption o_s_setup_game("Setup Game", 0, 0, 0, 0, &function_setup_solo_game);
+SNOption o_s_options("Options", 0, 0, 0, 0, &function_refresh_solo_lobby);
+SNOption o_slobby_to_home("Title Screen", 0, 0, 0, 0, &function_lobby_to_home);
+vector<SNOption*> solo_lobby_menu_options = {
+	&o_s_start_match,
+	&o_s_setup_game,
+	&o_spacer,
+	&o_s_options,
+	&o_slobby_to_home,
+};
+SNMenu m_solo_lobby_menu("Solo Menu", 4, 2, 0, 1, solo_lobby_menu_options, &function_refresh_solo_lobby);
+SNLabel l_solo_lobby_title("Solo Play", false, 4, 0, 0, 2, 1.5);
+vector<SNElement*> solo_lobby_elements = {
+	&m_solo_lobby_menu,
+	&l_solo_lobby_title,
 };
 
 
@@ -113,6 +164,17 @@ void draw_title();
 SNPage title_page("Title Page", title_elements, &setup_title, &draw_title);
 
 
+// multiplayer_lobby_page declarations
+void setup_multiplayer_lobby();
+void draw_multiplayer_lobby();
+SNPage multiplayer_lobby_page("Multiplayer Lobby Page", multiplayer_lobby_elements, &setup_multiplayer_lobby, &draw_multiplayer_lobby);
+
+
+// solo_lobby_page declarations
+void setup_solo_lobby();
+void draw_solo_lobby();
+SNPage solo_lobby_page("Solo Lobby Page", solo_lobby_elements, &setup_solo_lobby, &draw_solo_lobby);
+
 // setup_solo_page declarations
 void setup_solo_setup();
 void draw_solo_setup();
@@ -130,15 +192,38 @@ SNPage play_page("Play Page", play_elements, &setup_play, &draw_play);
 
 // title_page element functions.
 void function_open_multiplayer() {
-
+	my_app.activate_page(&multiplayer_lobby_page);
 }
 void function_open_solo_play() {
-
+	my_app.activate_page(&solo_lobby_page);
 }
 void function_open_options() {
 
 }
 void function_refresh_title() {
+	my_app.current_page->draw_page();
+}
+
+// multiplayer_lobby_page element functions.
+void function_start_match() {
+
+}
+void function_setup_game() {
+
+}
+void function_lobby_to_home() {
+	my_app.activate_page(&title_page);
+}
+void function_refresh_multiplayer_lobby() {
+	my_app.current_page->draw_page();
+}
+
+
+// solo_lobby_page element functions.
+void function_setup_solo_game() {
+	my_app.activate_page(&solo_setup_page);
+}
+void function_refresh_solo_lobby() {
 	my_app.current_page->draw_page();
 }
 
@@ -202,6 +287,24 @@ void setup_title(){
 
 }
 void draw_title() {
+
+}
+
+
+// multiplayer_lobby_page SNPage functions
+void setup_multiplayer_lobby() {
+
+}
+void draw_multiplayer_lobby() {
+
+}
+
+
+// solo_lobby_page declarations
+void setup_solo_lobby() {
+
+}
+void draw_solo_lobby() {
 
 }
 

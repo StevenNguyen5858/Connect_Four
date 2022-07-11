@@ -112,18 +112,22 @@ int main() {
 				if (event.key.code == sf::Keyboard::Escape) {
 					main_window.close();
 				}
-				if (event.key.code == 22) {
+				if (event.key.code == 22 || event.key.code == 73 ) {
 					key = "w";
 				}
-				if (event.key.code == 0) {
+				if (event.key.code == 0 || event.key.code == 71) {
 					key = "a";
 				}
-				if (event.key.code == 18) {
+				if (event.key.code == 18 || event.key.code == 74) {
 					key = "s";
 				}
-				if (event.key.code == 3) {
+				if (event.key.code == 3 || event.key.code == 72) {
 					key = "d";
 				}
+				if (event.key.code == 58) {
+					key = "ENTER";
+				}
+				cout << "TEST1" << endl;
 				keypressed(key);
 			}
 		}
