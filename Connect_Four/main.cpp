@@ -129,7 +129,6 @@ int main() {
 				if (event.key.code == 58) {
 					key = "ENTER";
 				}
-				cout << "TEST1" << endl;
 				keypressed(key);
 			}
 		}

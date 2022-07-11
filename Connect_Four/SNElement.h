@@ -490,7 +490,7 @@ public:
 		}
 		stroke(255);
 		no_fill();
-		rect(x, y, w, h);
+		//rect(x, y, w, h);
 		for (int i = 0; i < options.size(); i++) {
 			if (options[i]->name == " " || options[i]->name == "") {
 				continue;

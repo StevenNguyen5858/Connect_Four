@@ -78,16 +78,12 @@ public:
 		if (drop_col > 6 || drop_col < 0) {
 			return;
 		}
-		cout << "Drop test for column " << drop_col << endl;
 		for (int r = 5; r >= 0; r--) {
-			cout << "  Testing y " << r << ":";
 			if (board[drop_col][r] == -1) {
-				cout << "Is empty" << endl;
 				board[drop_col][r] = 1;
 				break;
 			}
 			else {
-				cout << "Is full" << endl;
 			}
 		}
 		refresh();
