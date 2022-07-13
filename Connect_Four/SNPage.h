@@ -2,7 +2,7 @@
 #include "SNElement.h"
 #include "Game_Controller.h"
 
-bool uses_dev_grid = true;
+bool uses_dev_grid = false;
 class SNPage {
 	// Access specifier:
 public:

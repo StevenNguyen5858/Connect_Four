@@ -680,6 +680,7 @@ public:
 };
 
 
+bool uses_menu_outline = false;
 class SNMenu : public SNElement {
 	// Access specifier:
 public:
@@ -749,9 +750,11 @@ public:
 		if (updated_once == false) {
 			resize_update();
 		}
-		stroke(255);
-		no_fill();
-		rect(x, y, w, h);
+		if (uses_menu_outline) {
+			stroke(255);
+			no_fill();
+			rect(x, y, w, h);
+		}
 		for (int i = 0; i < options.size(); i++) {
 			if (options[i]->name == " " || options[i]->name == "") {
 				continue;
