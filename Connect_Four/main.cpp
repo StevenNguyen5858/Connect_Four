@@ -43,8 +43,6 @@ void setup() {
 	my_app.add_page(&solo_setup_page);
 	my_app.add_page(&play_page);
 	my_app.current_page = &title_page;
-	rb_difficulty = &rb_easy;
-	rb_easy.is_selected = true;
 }
 
 // Loops for application drawing.

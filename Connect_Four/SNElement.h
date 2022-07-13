@@ -454,191 +454,6 @@ public:
 };
 
 
-class SNOption : public SNButton {
-	// Access specifier:
-public:
-	double x2 = 0;
-	double w2 = 0;
-	double option_width = 0;
-	double option_data_width = 0;
-	string option_data = "";
-
-	// Default Constructor:
-	SNOption(){}
-	// Parameterized Constructor:
-	SNOption(string name, double x, double y, double w, double h, void (*function)())
-	: SNButton(name, x, y, w, h, function){
-		this->type = "SNOption";
-	}
-	SNOption(string name, double x, double y, double w, double h, string option_data, void (*function)())
-		: SNButton(name, x, y, w, h, function) {
-		this->type = "SNOption";
-		this->option_data = option_data;
-	}
-
-	// Methods:
-	void set_box_part1(double x, double y, double h) {
-		//SNOptions are intended to be sized post object initialization as apart of a SNMenu object.
-		this->x = x;
-		this->y = y;
-		this->h = h;
-	}
-	double width_func() { 
-		// text_width cannot be computed in constructors. Run after set_box
-		return (text_width(name, 0.8)) + 0.4;
-	}
-	void set_box_part2(double option_width) {
-		//SNOptions are intended to be sized post object initialization as apart of a SNMenu object.
-		this->option_width = option_width;
-		this->x2 = x + option_width + 2;
-		cout << "LARGEST OPTION W" << option_width << ":" << this->option_width << endl;
-	}
-	double data_width_func() {
-		// text_width cannot be computed in constructors. Run after set_box
-		return (text_width(option_data, 0.8)) + 0.4;
-	}
-	void set_box_part3(double option_data_width) {
-		//SNOptions are intended to be sized post object initialization as apart of a SNMenu object.
-		this->option_data_width = option_data_width;
-		if (option_data == "") {
-			this->w = this->option_width;
-			cout << "IF" << endl;
-		}
-		else {
-			this->w = (option_data_width + x2) - x;
-			cout << "ELSE" << option_data_width << ":" << x2 << endl;
-		}
-	}
-
-	void draw_element() {
-		// Coloring and styling is intended to occur from SNMenu object.
-		y_centered_text(name, x+0.2, y, h, 0.8);
-		if (option_data != "") {
-			y_centered_text(option_data, x2 + 0.2, y, h, 0.8);
-		}
-	}
-};
-
-
-class SNMenu : public SNElement {
-	// Access specifier:
-public:
-	vector<SNOption*> options;
-	int selected_option_pos = 0;
-	int num_options = 0;
-	double option_h = 0;
-	void (*refresh)();
-	
-
-	// Default Constructor:
-	SNMenu() {}
-	// Parameterized Constructor:
-	SNMenu(string name, double x, double y, double w, double option_h, vector<SNOption*> options, void (*refresh)()){
-		this->type = "SNMenu";
-		this->name = name;
-		this->x = x;
-		this->y = y;
-		this->w = w;
-		this->option_h = option_h;
-		this->h = options.size()*option_h;
-		this->options = options;
-		this->refresh = refresh;
-		for (int i = 0; i < options.size(); i++) {
-			if (options[i]->name != " " || options[i]->name != "") {
-				num_options++;
-			}
-		}
-	}
-
-	bool updated_once = false;
-	void resize_update() {
-		// Set proper rect for options.
-		for (int i = 0; i < options.size(); i++) {
-			options[i]->set_box_part1(x, y + i, option_h);
-		}
-		// Find largest width of option, for menu hitbox.
-		double largest_w = 0;
-		for (int i = 0; i < options.size(); i++) {
-			if (text_width(options[i]->name, 0.8) > largest_w) {
-				largest_w = options[i]->width_func();
-			}
-		}
-		// Set proper rect for options.
-		for (int i = 0; i < options.size(); i++) {
-			options[i]->set_box_part2(largest_w);
-		}
-		// Find largest width of option_data, for menu hitbox.
-		double largest_data_w = 0;
-		for (int i = 0; i < options.size(); i++) {
-			if (text_width(options[i]->option_data, 0.8) > largest_data_w) {
-				largest_data_w = options[i]->data_width_func();
-			}
-		}
-		// Set proper rect for options.
-		for (int i = 0; i < options.size(); i++) {
-			options[i]->set_box_part3(largest_data_w);
-		}
-		this->w = options[0]->w;
-		
-		updated_once = true;
-	}
-	void draw_element() {
-		if (updated_once == false) {
-			resize_update();
-		}
-		stroke(255);
-		no_fill();
-	    //rect(x, y, w, h);
-		for (int i = 0; i < options.size(); i++) {
-			if (options[i]->name == " " || options[i]->name == "") {
-				continue;
-			}
-			if (i == selected_option_pos) {
-				fill(sf::Color(218, 119, 48));
-			}
-			else {
-				fill(255);
-			}
-			options[i]->draw_element();
-		}
-	}
-	void find_option(double grid_x, double grid_y) {
-		for (int i = 0; i < options.size(); i++) {
-			SNOption *e = options[i];
-			if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-				e->function();
-			}
-		}
-	}
-	void navigate(string key) {
-		if (key == "w" && selected_option_pos > 0) {
-			selected_option_pos--;
-			for (int x = selected_option_pos; x > 0; x--) {
-				if (options[x]->name != " " && options[x]->name != "") {
-					break;
-				}
-				selected_option_pos--;
-			}
-
-		}
-		if (key == "s" && selected_option_pos < num_options-1) {
-			selected_option_pos++;
-			for (int x = selected_option_pos; x < options.size()-1; x++) {
-				if (options[x]->name != " " && options[x]->name != "") {
-					break;
-				}
-				selected_option_pos++;
-			}
-		}
-		if (key == "ENTER") {
-			options[selected_option_pos]->function();
-			cout << "ENTER " << options[selected_option_pos]->name << " Selected." << endl;
-		}
-		refresh();
-	}
-};
-
-
 class SNButton_in_set : public SNElement { // Useful for when button position in a set is relevant.
 	// Access specifier:
 public:
@@ -747,6 +562,228 @@ public:
 		for (int i = 0; i < elements.size(); i++) {
 			elements[i]->draw_element();
 		}
+	}
+};
+
+
+class SNOption : public SNButton {
+	// Access specifier:
+public:
+	double x2 = 0;
+	double option_width = 0;
+	double data_width = 0;
+	string option_data = "";
+
+	// Default Constructor:
+	SNOption() {}
+	// Parameterized Constructor:
+	SNOption(string name, double x, double y, double w, double h, void (*function)())
+		: SNButton(name, x, y, w, h, function) {
+		this->type = "SNOption";
+	}
+	SNOption(string name, double x, double y, double w, double h, string option_data, void (*function)())
+		: SNButton(name, x, y, w, h, function) {
+		this->type = "SNOption";
+		this->option_data = option_data;
+	}
+
+	// Methods:
+	void set_box_part1(double x, double y, double h) {
+		//SNOptions are intended to be sized post object initialization as apart of a SNMenu object.
+		this->x = x;
+		this->y = y;
+		this->h = h;
+	}
+
+	virtual double basic_width() {
+		option_width = (option_data == "") ? text_width(name, 0.8) + 0.4 : text_width(name, 0.8) + 0.4 + 2;
+		return option_width;
+	}
+	virtual double complex_width() {
+		x2 = this->x + this->option_width;
+		
+		data_width = (option_data != "") ? text_width(option_data, 0.8) + 0.4 : 0;
+		this->w = option_width + data_width;
+		return this->w;
+	}
+
+	void draw_element() {
+		// Coloring and styling is intended to occur from SNMenu object.
+		y_centered_text(name, x + 0.2, y, h, 0.8);
+		if (option_data != "") {
+			y_centered_text(option_data, x2 + 0.2, y, h, 0.8);
+		}
+	}
+};
+
+
+class SNRadio_Option : public SNOption {
+	// Access specifier:
+public:
+	int radio_pos;
+	vector<string> radios;
+
+	// Default Constructor:
+	SNRadio_Option() {
+	}
+	// Parameterized Constructor:
+	SNRadio_Option(string name, double x, double y, double w, double h, void (*function)(), vector<string> radios)
+	: SNOption(name, x, y, w, h, function) {
+		this->type = "SNRadio_Option";
+		this->radios = radios;
+	}
+
+	// Methods
+	double basic_width() {
+		return 0;
+	}
+	double complex_width() {
+		int current_x = this->x;
+		for (int i = 0; i < radios.size(); i++) {
+			current_x = current_x + 1.2 + text_width(radios[i], 0.8) + 1.5;
+		}
+		return current_x - x;
+	}
+	void draw_element() {
+		cout << " " << name << " (overloaded draw func)." << x << "." << y << endl;
+		int current_x = this->x;
+		for (int i = 0; i < radios.size(); i++) {
+			if (radio_pos == i) {
+				image(&radio_full, current_x, y, 1, 1);
+			}
+			else {
+				image(&radio_empty, current_x, y, 1, 1);
+			}
+			// Coloring and styling is intended to occur from SNMenu object.
+			y_centered_text(radios[i], current_x + 1.2, y, h, 0.8);
+			current_x = current_x + 1.2 + text_width(radios[i], 0.8) + 1.5;
+		}
+	}
+	string radio_switch() {
+		radio_pos = (radio_pos == radios.size() - 1) ? 0 : radio_pos + 1;
+		return radios[radio_pos];
+	}
+};
+
+
+class SNMenu : public SNElement {
+	// Access specifier:
+public:
+	vector<SNOption*> options;
+	int selected_option_pos = 0;
+	int num_options = 0;
+	double option_h = 0;
+	void (*refresh)();
+
+
+	// Default Constructor:
+	SNMenu() {}
+	// Parameterized Constructor:
+	SNMenu(string name, double x, double y, double w, double option_h, vector<SNOption*> options, void (*refresh)()) {
+		this->type = "SNMenu";
+		this->name = name;
+		this->x = x;
+		this->y = y;
+		this->w = w;
+		this->option_h = option_h;
+		this->h = options.size() * option_h;
+		this->options = options;
+		this->refresh = refresh;
+		for (int i = 0; i < options.size(); i++) {
+			if (options[i]->name != " " || options[i]->name != "") {
+				num_options++;
+			}
+		}
+	}
+
+	bool updated_once = false;
+	void resize_update() {
+		// Set proper rect for options.
+		double max_option_w = 0;
+		// Set X Y H + Find largest basic width
+		for (int i = 0; i < options.size(); i++) {
+			options[i]->set_box_part1(x, y + i, option_h);
+			double option_width = options[i]->basic_width();
+			if (max_option_w < option_width) {
+				max_option_w = option_width;
+			}			
+		}
+
+		double total_width = 0;
+		for (int i = 0; i < options.size(); i++) {
+			options[i]->option_width = max_option_w;
+			cout << "OPTION WIDTH" << options[i]->option_width << endl;
+			if (total_width < options[i]->complex_width()) {
+				total_width = options[i]->complex_width();
+			}
+		}
+
+		double max_total_w = 0;
+		for (int i = 0; i < options.size(); i++) {
+			if (max_total_w < options[i]->w) {
+				max_total_w = options[i]->w;
+			}
+		}
+
+		for (int i = 0; i < options.size(); i++) {
+			options[i]->w = max_total_w;
+		}
+		this->w = max_total_w;
+		updated_once = true;
+	}
+	void draw_element() {
+		if (updated_once == false) {
+			resize_update();
+		}
+		stroke(255);
+		no_fill();
+		rect(x, y, w, h);
+		for (int i = 0; i < options.size(); i++) {
+			if (options[i]->name == " " || options[i]->name == "") {
+				continue;
+			}
+			if (i == selected_option_pos) {
+				fill(sf::Color(218, 119, 48));
+			}
+			else {
+				fill(255);
+			}
+			options[i]->draw_element();
+		}
+	}
+	void find_option(double grid_x, double grid_y) {
+		for (int i = 0; i < options.size(); i++) {
+			SNOption* e = options[i];
+			if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
+				e->function();
+			}
+		}
+	}
+	void navigate(string key) {
+		if (key == "w" && selected_option_pos > 0) {
+			selected_option_pos--;
+			for (int x = selected_option_pos; x > 0; x--) {
+				if (options[x]->name != " " && options[x]->name != "") {
+					break;
+				}
+				selected_option_pos--;
+			}
+
+		}
+		if (key == "s" && selected_option_pos < num_options - 1) {
+			selected_option_pos++;
+			for (int x = selected_option_pos; x < options.size() - 1; x++) {
+				if (options[x]->name != " " && options[x]->name != "") {
+					break;
+				}
+				selected_option_pos++;
+			}
+		}
+		if (key == "ENTER") {
+			options[selected_option_pos]->function();
+			cout << "ENTER " << options[selected_option_pos]->name << " Selected." << endl;
+		}
+		refresh();
 	}
 };
 
