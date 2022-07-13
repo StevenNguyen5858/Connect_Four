@@ -106,7 +106,7 @@ vector<SNOption*> multiplayer_setup_menu_options = {
 	&o_spacer,
 	&o_apply,
 };
-SNMenu m_multiplayer_setup_menu("Multiplayer Menu", 4, 2, 0, 1, multiplayer_setup_menu_options, &function_refresh);
+SNMenu m_multiplayer_setup_menu("Multiplayer Menu", 4, 3, 0, 1, multiplayer_setup_menu_options, &function_refresh);
 SNLabel l_multiplayer_setup_title("Setup Online Game", true, 9, 0.5, 14, 1.5, 1.5);
 vector<SNElement*> multiplayer_setup_elements = {
 	&m_multiplayer_setup_menu,
@@ -146,7 +146,7 @@ vector<SNOption*> solo_setup_menu_options = {
 	&o_spacer,
 	&o_s_apply,
 };
-SNMenu m_solo_setup_menu("Solo Menu", 4, 2, 0, 1, solo_setup_menu_options, &function_refresh);
+SNMenu m_solo_setup_menu("Solo Menu", 4, 3, 0, 1, solo_setup_menu_options, &function_refresh);
 SNLabel l_solo_setup_title("Setup Solo Game", true, 9, 0.5, 14, 1.5, 1.5);
 SNButton b_play("Play", 14.5, 14, 3, 1, &function_open_play);
 vector<SNElement*> solo_setup_elements = {

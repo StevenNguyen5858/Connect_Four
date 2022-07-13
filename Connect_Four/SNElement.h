@@ -264,11 +264,12 @@ void y_centered_text(string str, double x, double y, double h, double text_h) {
 	text.setFont(font);
 	text.setStyle(sf::Text::Bold);
 	text.setFillColor(current_fill);
-	text.setString(str);
+	text.setString("l"); // Set string to l for consistent text height regardless of entered str
 	text.setCharacterSize(text_h * sh);
 	// Text Positioning:
 	double centered_offset_y = ((h * sh) - text.getGlobalBounds().height) / 2;
 	int centered_y = (y * sh) + centered_offset_y;
+	text.setString(str);
 	text.setOrigin(text.getGlobalBounds().left, text.getGlobalBounds().top);
 	text.setPosition(sf::Vector2f(int(x * sw), centered_y));
 
@@ -281,13 +282,14 @@ void all_centered_text(string str, double x, double y, double w, double h, doubl
 	text.setFont(font);
 	text.setStyle(sf::Text::Bold);
 	text.setFillColor(current_fill);
-	text.setString(str);
+	text.setString("l"); // Set string to l for consistent text height regardless of entered strtext.setString(str);
 	text.setCharacterSize(text_h * sh);
 	// Text Positioning:
-	double centered_offset_x = ((w * sw) - (text.getGlobalBounds().width)) / 2;
-	int centered_x = (x * sw) + centered_offset_x;
 	double centered_offset_y = ((h * sh) - text.getGlobalBounds().height) / 2;
 	int centered_y = (y * sh) + centered_offset_y;
+	text.setString(str);
+	double centered_offset_x = ((w * sw) - (text.getGlobalBounds().width)) / 2;
+	int centered_x = (x * sw) + centered_offset_x;
 	text.setOrigin(text.getGlobalBounds().left, text.getGlobalBounds().top);
 	text.setPosition(sf::Vector2f(centered_x, centered_y));
 
@@ -302,22 +304,22 @@ void background(int color) {
 	main_window.clear(sf::Color(color, color, color, 255));
 }
 // Draws an sf::image object to buffer at default image size.
-void image(sf::Image* img, int x, int y) { 
+void image(sf::Image* img, double x, double y) { 
 	sf::Texture temp;
 	sf::Sprite sprit;
-	sprit.setPosition(sf::Vector2f(x * sw, y * sh));
+	sprit.setPosition(sf::Vector2f(int(x * sw), int(y * sh)));
 	temp.loadFromImage(*img);
 	sprit.setTexture(temp);
 	main_window.draw(sprit);
 }
 // Draws an sf::image object to buffer with given width and height.
 // Images scale best by factors of two.
-void image(sf::Image* img, int x, int y, int new_width, int new_height) { 
+void image(sf::Image* img, double x, double y, int new_width, int new_height) { 
 	double scale_w = (float)(new_width * sw) / img->getSize().x;
 	double scale_h = (float)(new_height * sh) / img->getSize().y;
 	sf::Texture temp;
 	sf::Sprite sprit;
-	sprit.setPosition(sf::Vector2f(x * sw, y * sh));
+	sprit.setPosition(sf::Vector2f(int(x * sw), int(y * sh)));
 	temp.loadFromImage(*img);
 	sprit.setTexture(temp);
 	sprit.setScale(sf::Vector2f(scale_w, scale_h));
@@ -342,12 +344,10 @@ void gridless() {
 }
 // Image background.
 void background2() {
-	cout << "IMAGE Drawn" << endl;
 	main_window.clear(sf::Color(32, 32, 32));
 	image(&bg2, 0, 0, 32, 18);
 }
 void background4() {
-	cout << "IMAGE Drawn" << endl;
 	main_window.clear(sf::Color(32, 32, 32));
 	image(&bg4, 0, -2, 32, 24);
 }
@@ -606,7 +606,7 @@ public:
 		this->w = option_width + data_width;
 		return this->w;
 	}
-
+	virtual void final_update(double menu_width) {}
 	void draw_element() {
 		// Coloring and styling is intended to occur from SNMenu object.
 		y_centered_text(name, x + 0.2, y, h, 0.8);
@@ -622,6 +622,8 @@ class SNRadio_Option : public SNOption {
 public:
 	int radio_pos;
 	vector<string> radios;
+	double spacer = 1.5;
+	double sum_radio_widths = 0;
 
 	// Default Constructor:
 	SNRadio_Option() {
@@ -640,13 +642,25 @@ public:
 	double complex_width() {
 		int current_x = this->x;
 		for (int i = 0; i < radios.size(); i++) {
-			current_x = current_x + 1.2 + text_width(radios[i], 0.8) + 1.5;
+			current_x = current_x + 1.2 + text_width(radios[i], 0.8) + spacer;
 		}
-		return current_x - x;
+		this->w = current_x - x;
+		return w;
+	}
+	void final_update(double menu_width) {
+		if (this->w < menu_width) {
+			for (int i = 0; i < radios.size(); i++) {
+				sum_radio_widths += text_width(radios[i], 0.8);
+			}
+
+			double taken_space = sum_radio_widths + (radios.size()) * (1.2) + .2;
+			double space_left = menu_width - taken_space;
+			this->spacer = space_left/(radios.size()-1);
+		}
 	}
 	void draw_element() {
 		cout << " " << name << " (overloaded draw func)." << x << "." << y << endl;
-		int current_x = this->x;
+		double current_x = this->x;
 		for (int i = 0; i < radios.size(); i++) {
 			if (radio_pos == i) {
 				image(&radio_full, current_x, y, 1, 1);
@@ -656,7 +670,7 @@ public:
 			}
 			// Coloring and styling is intended to occur from SNMenu object.
 			y_centered_text(radios[i], current_x + 1.2, y, h, 0.8);
-			current_x = current_x + 1.2 + text_width(radios[i], 0.8) + 1.5;
+			current_x = current_x + 1.2 + text_width(radios[i], 0.8) + spacer;
 		}
 	}
 	string radio_switch() {
@@ -712,7 +726,6 @@ public:
 		double total_width = 0;
 		for (int i = 0; i < options.size(); i++) {
 			options[i]->option_width = max_option_w;
-			cout << "OPTION WIDTH" << options[i]->option_width << endl;
 			if (total_width < options[i]->complex_width()) {
 				total_width = options[i]->complex_width();
 			}
@@ -726,8 +739,9 @@ public:
 		}
 
 		for (int i = 0; i < options.size(); i++) {
-			options[i]->w = max_total_w;
+			options[i]->final_update(max_total_w);
 		}
+
 		this->w = max_total_w;
 		updated_once = true;
 	}
