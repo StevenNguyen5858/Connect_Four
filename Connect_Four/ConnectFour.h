@@ -86,75 +86,96 @@ vector<SNElement*> solo_lobby_elements = {
 };
 
 
+// options_page elements:
+void function_toggle_dev_grid();
+void function_settings_to_title();
+void function_toggle_backgrounds();
+
+string str_uses_dev_grid = (uses_dev_grid) ? "true" : "false";
+bool uses_backgrounds = true;
+string str_uses_backgrounds = (uses_backgrounds) ? "true" : "false";
+SNOption o_dev_grid("Enable-Developer-Tools:", 0, 0, 0, 0, str_uses_dev_grid, &function_toggle_dev_grid);
+SNOption o_use_backgrounds("Use-Backgrounds:", 0, 0, 0, 0, str_uses_backgrounds, &function_toggle_backgrounds);
+SNOption o_settings_to_title("Title Screen", 0, 0, 0, 0, &function_settings_to_title);
+vector<SNOption*> settings_menu_options = {
+	&o_dev_grid,
+	&o_use_backgrounds,
+	&o_spacer,
+	&o_settings_to_title,
+};
+SNMenu m_settings_menu("settings menu", 4, 3, 0, 1, settings_menu_options, &function_refresh);
+SNLabel l_app_settings_title("App Settings", true, 9, 0.5, 14, 1.5, 1.5);
+vector<SNElement*> settings_elements = {
+	&m_settings_menu,
+	&l_app_settings_title,
+};
+
 Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh);
 // multiplayer_setup_page elements:
 void function_o_color1();
 void function_o_color2();
-void function_o_starting_player();
+void function_o_starting();
 void function_msetup_to_mlobby();
 
 SNOption o_color1("Player1 Color:", 0, 0, 0, 0, my_game.player1_color(),&function_o_color1);
 SNOption o_color2("Player2 Color:", 0, 0, 0, 0, my_game.player2_color(), &function_o_color2);
-SNOption o_starting_player("Starting Player:", 0, 0, 0, 0, my_game.starting_player_name(), &function_o_starting_player);
+SNOption o_starting("Starting Player:", 0, 0, 0, 0, my_game.starting_player_name(), &function_o_starting);
 SNOption o_apply("Apply", 0, 0, 0, 0, &function_msetup_to_mlobby);
 vector<SNOption*> multiplayer_setup_menu_options = {
 	&o_color1,
 	&o_color2,
-	&o_starting_player,
+	&o_spacer,
+	&o_starting,
 	&o_spacer,
 	&o_spacer,
 	&o_apply,
 };
-SNMenu m_multiplayer_setup_menu("Multiplayer Menu", 4, 2, 0, 1, multiplayer_setup_menu_options, &function_refresh);
-SNLabel l_multiplayer_setup_title("Setup Game", true, 9, 0.5, 14, 1.5, 1.5);
+SNMenu m_multiplayer_setup_menu("Multiplayer Menu", 4, 3, 0, 1, multiplayer_setup_menu_options, &function_refresh);
+SNLabel l_multiplayer_setup_title("Setup Online Game", true, 9, 0.5, 14, 1.5, 1.5);
 vector<SNElement*> multiplayer_setup_elements = {
 	&m_multiplayer_setup_menu,
 	&l_multiplayer_setup_title,
 };
 
+
 // solo_setup_page elements:
 void function_difficulty();
-void function_player1();
-void function_color1();
-void function_player2();
-void function_color2();
-void function_starting_player();
+void function_o_s_color1();
+void function_o_s_color2();
+void function_o_s_player1();
+void function_o_s_player2();
+void function_o_s_starting();
 void function_open_play();
+void function_ssetup_to_mlobby();
 
-SNRadio_Button* rb_difficulty;
-SNRadio_Button rb_easy("Easy", 10, 4, 3, 1, &function_difficulty, &rb_difficulty);
-SNRadio_Button rb_medium("Medium", 14, 4, 4, 1, &function_difficulty, &rb_difficulty);
-SNRadio_Button rb_hard("Hard", 19, 4, 3, 1, &function_difficulty, &rb_difficulty);
-
-SNLabel l_connect_four("Connect Four", true, 9, 0.5, 14, 1.5, 1.5);
-SNLabel l_player1("Player1:", false, 10.2, 6, 4, 1, 0.6);
-SNLabel l_color1("Color:", false, 10.2, 7.5, 4, 1, 0.6);
-SNLabel l_player2("Player2:", false, 10.2, 9.5, 4, 1, 0.6);
-SNLabel l_color2("Color:", false, 10.2, 11, 4, 1, 0.6);
-SNLabel l_starting_player("Starting P:", false, 10.2, 12.5, 4, 1, 0.6);
-
-SNButton b_player1(my_game.player1_type(), 16, 6, 6, 1, &function_player1);
-SNButton b_color1(my_game.player1_color(), 16, 7.5, 6, 1, &function_color1);
-SNButton b_player2(my_game.player2_type(), 16, 9.5, 6, 1, &function_player2);
-SNButton b_color2(my_game.player2_color(), 16, 11, 6, 1, &function_color2);
-SNButton b_starting_player(my_game.starting_player_name(), 16, 12.5, 6, 1, &function_starting_player);
+vector<string> difficulty_radios = { "Easy", "Medium", "Hard" };
+SNRadio_Option ro_difficulty("Difficulty RO", 4, 2, 0, 1, &function_difficulty, difficulty_radios);
+SNOption o_s_color1("Player1 Color:", 0, 0, 0, 0, my_game.player1_color(), &function_o_s_color1);
+SNOption o_s_color2("Player2 Color:", 0, 0, 0, 0, my_game.player2_color(), &function_o_s_color2);
+SNOption o_s_player1("Player1 Type:", 0, 0, 0, 0, my_game.player1_type(), &function_o_s_player1);
+SNOption o_s_player2("Player2 Type:", 0, 0, 0, 0, my_game.player2_type(), &function_o_s_player2);
+SNOption o_s_starting("Starting Player:", 0, 0, 0, 0, my_game.starting_player_name(), &function_o_s_starting);
+SNOption o_s_apply("Apply", 0, 0, 0, 0, &function_ssetup_to_mlobby);
+vector<SNOption*> solo_setup_menu_options = {
+	&ro_difficulty,
+	&o_spacer,
+	&o_s_color1,
+	&o_s_color2,
+	&o_spacer,
+	&o_s_player1,
+	&o_s_player2,
+	&o_spacer,
+	&o_s_starting,
+	&o_spacer,
+	&o_spacer,
+	&o_s_apply,
+};
+SNMenu m_solo_setup_menu("Solo Menu", 4, 3, 0, 1, solo_setup_menu_options, &function_refresh);
+SNLabel l_solo_setup_title("Setup Solo Game", true, 9, 0.5, 14, 1.5, 1.5);
 SNButton b_play("Play", 14.5, 14, 3, 1, &function_open_play);
 vector<SNElement*> solo_setup_elements = {
-	&rb_easy,
-	&rb_medium,
-	&rb_hard,
-	&l_connect_four,
-	&l_player1,
-	&l_color1,
-	&l_player2,
-	&l_color2,
-	&l_starting_player,
-	&b_player1,
-	&b_color1,
-	&b_player2,
-	&b_color2,
-	&b_starting_player,
-	&b_play
+	&l_solo_setup_title,
+	&m_solo_setup_menu,
 };
 
 
@@ -166,6 +187,7 @@ SNLabel l_game_log("GAME LOG", true, .9, 4, 6, 1, 0.8);
 SNButton b_undo_move("Undo Move", 25, 4, 6, 1, &temp);
 SNButton b_restart_game("Restart Game", 25, 6, 6, 1, &function_restart);
 SNButton b_home_screen("Home Screen", 25, 8, 6, 1, &function_open_home);
+SNLabel l_connect_four("Connect IV", true, 9, 0.5, 14, 1.5, 1.5);
 vector<SNElement*> play_elements = {
 	&l_connect_four,
 	&l_game_log,
@@ -183,6 +205,12 @@ vector<SNElement*> play_elements = {
 void setup_title();
 void draw_title();
 SNPage title_page("Title Page", title_elements, &setup_title, &draw_title);
+
+
+// settings_page declarations
+void setup_settings();
+void draw_settings();
+SNPage settings_page("Settings Page", settings_elements, &setup_settings, &draw_settings);
 
 
 // multiplayer_lobby_page declarations
@@ -225,10 +253,27 @@ void function_open_solo_play() {
 	my_app.activate_page(&solo_lobby_page);
 }
 void function_open_options() {
-
+	my_app.activate_page(&settings_page);
 }
 void function_refresh() {
 	my_app.current_page->draw_page();
+}
+
+
+// options_page element functions:
+void function_toggle_dev_grid() {
+	uses_dev_grid = (uses_dev_grid) ? false : true;
+	uses_menu_outline = uses_dev_grid;
+	str_uses_dev_grid = (uses_dev_grid) ? "true" : "false";
+	o_dev_grid.option_data = str_uses_dev_grid;
+}
+void function_toggle_backgrounds() {
+	uses_backgrounds = (uses_backgrounds) ? false : true;
+	str_uses_backgrounds = (uses_backgrounds) ? "true" : "false";
+	o_use_backgrounds.option_data = str_uses_backgrounds;
+}
+void function_settings_to_title() {
+	my_app.activate_page(&title_page);
 }
 
 
@@ -254,19 +299,16 @@ void function_setup_solo_game() {
 void function_o_color1() {
 	my_game.player1_toggle_color();
 	o_color1.option_data = my_game.player1_color();
-	o_color2.option_data = my_game.player2_color();
-	my_app.current_page->draw_page();
+	o_color2.option_data = my_game.player2_color();	
 }
 void function_o_color2() {
 	my_game.player2_toggle_color();
 	o_color2.option_data = my_game.player2_color();
 	o_color1.option_data = my_game.player1_color();
-	my_app.current_page->draw_page();
 }
-void function_o_starting_player() {
+void function_o_starting() {
 	my_game.toggle_starting_player();
-	o_starting_player.option_data = my_game.starting_player_name();
-	my_app.current_page->draw_page();
+	o_starting.option_data = my_game.starting_player_name();	
 }
 void function_msetup_to_mlobby() {
 	my_app.activate_page(&multiplayer_lobby_page);
@@ -276,35 +318,32 @@ void function_msetup_to_mlobby() {
 // solo_setup_page element functions.
 void function_difficulty() {
 	my_app.refresh_page();
-	SNRadio_Button temp_rb = **(rb_easy.current_rb);
-	my_game.set_bot_difficulty(temp_rb.name);
+	my_game.set_bot_difficulty(ro_difficulty.radio_switch());
 }
-void function_player1() {
+void function_o_s_player1() {
 	my_game.player1_toggle_type();
-	b_player1.name = my_game.player1_type();
-	my_app.current_page->draw_page();
+	o_s_player1.option_data= my_game.player1_type();
 }
-void function_player2() {
+void function_o_s_player2() {
 	my_game.player2_toggle_type();
-	b_player2.name = my_game.player2_type();
-	my_app.current_page->draw_page();
+	o_s_player2.option_data = my_game.player2_type();
 }
-void function_color1() {
+void function_o_s_color1() {
 	my_game.player1_toggle_color();
-	b_color1.name = my_game.player1_color();
-	b_color2.name = my_game.player2_color();
-	my_app.current_page->draw_page();
+	o_s_color1.option_data = my_game.player1_color();
+	o_s_color2.option_data = my_game.player2_color();
 }
-void function_color2() {
+void function_o_s_color2() {
 	my_game.player2_toggle_color();
-	b_color2.name = my_game.player2_color();
-	b_color1.name = my_game.player1_color();
-	my_app.current_page->draw_page();
+	o_s_color2.option_data = my_game.player2_color();
+	o_s_color1.option_data = my_game.player1_color();
 }
-void function_starting_player() {
+void function_o_s_starting() {
 	my_game.toggle_starting_player();
-	b_starting_player.name = my_game.starting_player_name();
-	my_app.current_page->draw_page();
+	o_s_starting.option_data = my_game.starting_player_name();
+}
+void function_ssetup_to_mlobby() {
+	my_app.activate_page(&solo_lobby_page);
 }
 void function_open_play() {
 	my_app.activate_page(&play_page);
@@ -343,7 +382,22 @@ void setup_title(){
 
 }
 void draw_title() {
-	background2();
+	if (uses_backgrounds) {
+		background2();
+	}
+}
+
+
+// settings_page SNPage functions
+void setup_settings() {
+
+}
+void draw_settings() {
+	if (uses_backgrounds) {
+		background2();
+	}
+	// Accent lines
+	helper_line_accent();
 }
 
 
@@ -352,7 +406,9 @@ void setup_multiplayer_lobby() {
 
 }
 void draw_multiplayer_lobby() {
-	background4();
+	if (uses_backgrounds) {
+		background4();
+	}
 }
 
 
@@ -361,7 +417,9 @@ void setup_solo_lobby() {
 
 }
 void draw_solo_lobby() {
-	background2();
+	if (uses_backgrounds) {
+		background2();
+	}
 }
 
 
@@ -370,7 +428,9 @@ void setup_multiplayer_setup() {
 
 }
 void draw_multiplayer_setup() {
-	background2();
+	if (uses_backgrounds) {
+		background2();
+	}
 	// Accent lines
 	helper_line_accent();
 }
@@ -381,13 +441,11 @@ void setup_solo_setup() {
 
 }
 void draw_solo_setup() {
-	background2();
+	if (uses_backgrounds) {
+		background2();
+	}
 	// Accent lines
 	helper_line_accent();
-	// Center box
-	stroke(255);
-	fill(220);
-	rect(9, 3, 14, 13, 25);
 }
 
 
@@ -396,7 +454,9 @@ void setup_play() {
 
 }
 void draw_play() {
-	background4();
+	if (uses_backgrounds) {
+		background4();
+	}
 	stroke_weight(2);
 	fill(220);
 	stroke(255);
