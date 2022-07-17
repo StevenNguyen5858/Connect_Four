@@ -429,7 +429,7 @@ void setup_multiplayer_setup() {
 }
 void draw_multiplayer_setup() {
 	if (uses_backgrounds) {
-		background2();
+		background4();
 	}
 	// Accent lines
 	helper_line_accent();

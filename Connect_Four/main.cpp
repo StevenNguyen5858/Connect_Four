@@ -71,7 +71,7 @@ void keypressed(string key) {
 int main() {
 	my_app.add_page(&SNEM);
 	cout << "W: " << sf::VideoMode::getDesktopMode().width * .75 << " H: " << sf::VideoMode::getDesktopMode().height * .75 << endl;
-	setup_window(sf::VideoMode::getDesktopMode().width*.75, sf::VideoMode::getDesktopMode().height*.75, "SNElement Application");
+	setup_window(sf::VideoMode::getDesktopMode().width*.75, sf::VideoMode::getDesktopMode().height*.75, "Connect IV");
 	bool drawOnce = true;
 	SNEM_current_rb = &rb_dev;
 	rb_dev.is_selected = true;

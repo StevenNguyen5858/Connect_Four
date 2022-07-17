@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_07FA8F21D43B407F86FB7059ACAA7787"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0C5B336BF34E4374986167D87F5A0C43"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -22,6 +28,12 @@
         "Entry"
         {
         "MsmKey" = "8:_10E5C78633BE4FCA940BFEFEE177C7FA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_13A8641418514704810223BCD044EB0A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -64,6 +76,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6E6A89BB11C742CF9ADEB8D2C83D0ABE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8300C3E141B74AACB52709C2471C745E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -127,6 +145,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -143,6 +169,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -164,6 +206,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_07FA8F21D43B407F86FB7059ACAA7787"
+            {
+            "SourcePath" = "8:..\\Connect_Four\\SNElement Resources\\BG2.png"
+            "TargetName" = "8:BG2.png"
+            "Tag" = "8:"
+            "Folder" = "8:_99A6C7CCE41F44BC958C13BCD3486E6F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0C5B336BF34E4374986167D87F5A0C43"
             {
             "SourcePath" = "8:..\\Connect_Four\\SNElement Resources\\Edit.png"
@@ -190,6 +252,26 @@
             "TargetName" = "8:sfml-window-2.dll"
             "Tag" = "8:"
             "Folder" = "8:_CBEE86621DAE42FFB49A329FE1258636"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_13A8641418514704810223BCD044EB0A"
+            {
+            "SourcePath" = "8:..\\Connect_Four\\SNElement Resources\\BG5.jpg"
+            "TargetName" = "8:BG5.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_99A6C7CCE41F44BC958C13BCD3486E6F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -328,6 +410,26 @@
             {
             "SourcePath" = "8:..\\Connect_Four\\SNElement Resources\\TextIcon.png"
             "TargetName" = "8:TextIcon.png"
+            "Tag" = "8:"
+            "Folder" = "8:_99A6C7CCE41F44BC958C13BCD3486E6F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8300C3E141B74AACB52709C2471C745E"
+            {
+            "SourcePath" = "8:..\\Connect_Four\\SNElement Resources\\BG4.jpg"
+            "TargetName" = "8:BG4.jpg"
             "Tag" = "8:"
             "Folder" = "8:_99A6C7CCE41F44BC958C13BCD3486E6F"
             "Condition" = "8:"
@@ -543,7 +645,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Connect Four"
         "ProductCode" = "8:{C3F0E81D-08C3-4FE2-B87E-B97760D25241}"
-        "PackageCode" = "8:{EF507AB2-D613-4853-BD58-DE8C98AB941F}"
+        "PackageCode" = "8:{FEC7E429-0E8D-4080-8214-004D01641AA5}"
         "UpgradeCode" = "8:{5E49C785-BDD1-49CB-A223-634BD9A23024}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
