@@ -18,7 +18,21 @@ public:
 		this->isBot = isBot;
 	}
 
+	// Methods:
+	void get_move(int board[6][7]) {
+		if (isBot) {
+			// Hoangs code:
+
+		}
+		if (!isBot) {
+
+		}
+	}
+
 };
+
+
+
 
 
 class Game_Controller : public SNElement {
@@ -27,8 +41,12 @@ private:
 	int bot_difficulty = 0; // 0(easy), 1(medium), 2(hard)
 	player player1;
 	player player2;
-	int starting_player = 1; // 1(player1), 2(player2)
+	vector<player*> players = { &player1, &player2 };
+	int starting_player = 0; // 0(player1), 1(player2)
+
+	int current_player;
 	int board[6][7];
+	bool isMultiplayer = false;
 	void (*refresh)();
 public:
 
@@ -43,7 +61,7 @@ public:
 		new(&player1) player("Player 1", 0, false);
 		player2.~player();
 		new(&player2) player("Player 2", 1, false);
-		
+		this->current_player = starting_player;
 		
 		for (int x = 0; x < 7; x++) {
 			for (int y = 0; y < 6; y++) {
@@ -76,15 +94,137 @@ public:
 			}
 		}
 	}
+
 	// (Board) Methods
-	void place_token(int x) {
+	int helper_win(int last_token_x, int last_token_y, int vx, int vy) {
+		cout << "COUNTING FORWARDS FROM: " << last_token_x << ":" << last_token_y << endl;
+		cout << "vx:" << vx << " :vy: " << vy << endl;
+		// Find a wall by following a vector <x,y>
+		int curr_x = last_token_x;
+		int curr_y = last_token_y;
+		while (0 <= curr_y && curr_y <= 5 && 0 <= curr_x && curr_x <= 6) {
+			cout << "x:" << curr_x << " :y: " << curr_y << endl;
+			curr_x += vx;
+			curr_y += vy;
+		}
+		curr_x -= vx;
+		curr_y -= vy;
+		// Go backwards while counting for a win.
+		int player1_count = 0;
+		int player2_count = 0;
+		cout << "COUNTING Backwards FROM: " << curr_x << ":" << curr_y << endl;
+		
+		while (0 <= curr_y && curr_y <= 5 && 0 <= curr_x && curr_x <= 6) {
+			cout << "x:" << curr_x << " :y: " << curr_y << endl;
+			if (board[curr_y][curr_x] == 0) {
+				player1_count += 1;
+			}
+			else {
+				player1_count = 0;
+			}
+			if (board[curr_y][curr_x] == 1) {
+				player2_count += 1;
+			}
+			else {
+				player2_count = 0;
+			}
+
+			if (player1_count >= 4 && player2_count >= 4) {
+				return -2;
+			}
+			if (player1_count >= 4) {
+				return 0;
+			}
+			if (player2_count >= 4) {
+				return 1;
+			}
+			curr_x = curr_x - vx;
+			curr_y = curr_y - vy;
+		}
+		return -1;
+		
+	}
+	int check_win(int last_token_x, int last_token_y) {
+		vector<int> x_vectors = { 0, 1, 1, 1};
+		vector<int> y_vectors = { 1, 0, 1, -1};
+		int winner;
+		for (int a = 0; a < x_vectors.size(); a++) {
+			int winner = helper_win(last_token_x, last_token_y, x_vectors[a], y_vectors[a]);
+			if (winner != -1) {
+				return winner;
+			}
+		}
+		return -1;
+	}
+
+	void event_parser(string event, vector<string> *keys, vector<string> *values) {
+		string line;
+		vector<string> lines = {};
+		for (int i = 0; i < event.length(); i++) {
+			if (event.substr(i, 1) == ",") {
+				lines.push_back(line);
+				line = "";
+			}
+			else {
+				line += event.substr(i, 1);
+			}
+		}
+		lines.push_back(line);
+
+		string temp_key;
+		string temp_value;
+		int key_end_pos;
+		for (int i = 0; i < lines.size(); i++) {
+			if (lines[i].substr(0, 1) != "0") {
+				key_end_pos = stoi(lines[i].substr(0, 1));
+				temp_key = lines[i].substr(1, key_end_pos-2);
+				temp_value = lines[i].substr(key_end_pos, lines[i].length()-key_end_pos);
+				keys->push_back(temp_key);
+				values->push_back(temp_value);
+
+				cout << temp_key << "" << temp_value << endl;
+				temp_key = "";
+				temp_value = "";
+			}
+		}
+	}
+	void game_event(string event) {
+		string event1;
+		int from;
+		int pos;
+
+		// Process game events first.
+		vector<string> keys = {};
+		vector<string> values = {};
+		event_parser(event, &keys, &values);
+		
+		for (int i = 0; i < keys.size(); i++) {
+			if (keys[i] == "Event") {
+				event1 = values[i];
+			}
+			if (keys[i] == "From") {
+				from = stoi(values[i]);
+			}
+			if (keys[i] == "Pos") {
+				pos = stoi(values[i]);
+			}
+		}
+		// Then run through turn sequence.
+		if (event1 == "Place_Token") {
+
+			place_token(pos, this->current_player);
+		}
+	}
+	void place_token(int x, int current_player) {
 		int drop_col = (x - 9) / 2;
 		if (drop_col > 6 || drop_col < 0) {
 			return;
 		}
 		for (int r = 5; r >= 0; r--) {
 			if (board[r][drop_col] == -1) {
-				board[r][drop_col] = 1;
+				board[r][drop_col] = current_player;
+				this->current_player = (current_player == 0) ? 1 : 0;
+				cout << "CHECKING WINNER: " << check_win(drop_col, r) << endl;
 				break;
 			}
 			else {
@@ -92,6 +232,7 @@ public:
 		}
 		refresh();
 	}
+
 	void restart() {
 		for (int x = 0; x < 7; x++) {
 			for (int y = 0; y < 6; y++) {

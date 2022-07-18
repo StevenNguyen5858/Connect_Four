@@ -90,7 +90,8 @@ public:
 			if (e->type == "Game Controller") {
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
-					GC_ptr->place_token(grid_x);
+					GC_ptr->game_event("6From:0,7Event:Place_Token,5Pos:"+to_string(grid_x));
+					//GC_ptr->place_token(grid_x);
 					cout << e->name << " has been pressed." << endl;
 				}
 			}
@@ -127,7 +128,7 @@ public:
 			if (e->type == "Game Controller") {
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
-					GC_ptr->place_token(grid_x);
+					//GC_ptr->place_token(grid_x);
 					cout << e->name << " has been pressed." << endl;
 				}
 			}
