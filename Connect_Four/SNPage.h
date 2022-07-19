@@ -2,7 +2,12 @@
 #include "SNElement.h"
 #include "Game_Controller.h"
 
+
+void function_refresh();
+
 bool uses_dev_grid = false;
+Game_Log gl_game_log("GAME LOG", 1, 4, 6, 12.5, &function_refresh);
+Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh, &gl_game_log);
 class SNPage {
 	// Access specifier:
 public:
@@ -90,7 +95,8 @@ public:
 			if (e->type == "Game Controller") {
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
-					GC_ptr->game_event("6From:0,7Event:Place_Token,5Pos:"+to_string(grid_x));
+					int drop_col = (grid_x - 9) / 2;
+					GC_ptr->game_event("6From:"+ to_string(my_game.current_player) + ",7Event:Place_Token,5Pos:" + to_string(drop_col));
 					//GC_ptr->place_token(grid_x);
 					cout << e->name << " has been pressed." << endl;
 				}

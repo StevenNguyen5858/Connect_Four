@@ -38,12 +38,12 @@ vector<SNElement*> title_elements = {
 
 
 // multiplayer_lobby_page elements:
-void function_start_match();
+void function_start_multiplayer_match();
 void function_setup_game();
 void function_lobby_to_home();
 // void function_open_options() <- a duplicate use
 
-SNOption o_start_match("Start Match", 0, 0, 0, 0, &function_start_match);
+SNOption o_start_match("Start Match", 0, 0, 0, 0, &function_start_multiplayer_match);
 SNOption o_setup_game("Setup Game", 0, 0, 0, 0, &function_setup_game);
 SNOption o_spacer(" ", 0, 0, 0, 0, &temp);
 SNOption o_m_options("Options", 0, 0, 0, 0, &function_open_multiplayer);
@@ -66,8 +66,9 @@ vector<SNElement*> multiplayer_lobby_elements = {
 // solo_lobby_page elements:
 // void function_start_match() <- a duplicate use
 void function_setup_solo_game();
+void function_start_solo_match();
 
-SNOption o_s_start_match("Start Match", 0, 0, 0, 0, &function_start_match);
+SNOption o_s_start_match("Start Match", 0, 0, 0, 0, &function_start_solo_match);
 SNOption o_s_setup_game("Setup Game", 0, 0, 0, 0, &function_setup_solo_game);
 SNOption o_s_options("Options", 0, 0, 0, 0, &function_refresh);
 SNOption o_slobby_to_home("Title Screen", 0, 0, 0, 0, &function_lobby_to_home);
@@ -110,8 +111,7 @@ vector<SNElement*> settings_elements = {
 	&l_app_settings_title,
 };
 
-Game_Log gl_game_log("GAME LOG", 1, 4, 6, 12.5, &function_refresh);
-Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh, &gl_game_log);
+
 // multiplayer_setup_page elements:
 void function_o_color1();
 void function_o_color2();
@@ -280,7 +280,9 @@ void function_settings_to_title() {
 
 
 // multiplayer_lobby_page element functions.
-void function_start_match() {
+void function_start_multiplayer_match() {
+	my_game.isMultiplayer = true;
+	my_game.start_game();
 	my_app.activate_page(&play_page);
 }
 void function_setup_game() {
@@ -294,6 +296,11 @@ void function_lobby_to_home() {
 // solo_lobby_page element functions.
 void function_setup_solo_game() {
 	my_app.activate_page(&solo_setup_page);
+}
+void function_start_solo_match() {
+	my_game.isMultiplayer = false;
+	my_game.start_game();
+	my_app.activate_page(&play_page);
 }
 
 
@@ -348,6 +355,7 @@ void function_ssetup_to_mlobby() {
 	my_app.activate_page(&solo_lobby_page);
 }
 void function_open_play() {
+	my_game.start_game();
 	my_app.activate_page(&play_page);
 }
 
@@ -358,7 +366,12 @@ void function_restart() {
 }
 void function_open_home() {
 	my_game.restart();
-	my_app.activate_page(&solo_setup_page);
+	if (my_game.isMultiplayer) {
+		my_app.activate_page(&multiplayer_lobby_page);
+	}
+	else {
+		my_app.activate_page(&solo_lobby_page);
+	}
 }
 
 

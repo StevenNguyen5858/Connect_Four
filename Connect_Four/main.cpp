@@ -47,7 +47,11 @@ void setup() {
 
 // Loops for application drawing.
 void draw() {
-
+	if (my_game.game_started) {
+		if (my_game.active_player().isBot) {
+			my_game.game_event("6From:" + to_string(my_game.current_player) + ",7Event:Place_Token");
+		}
+	}
 }
 
 // Runs when mouse is pressed.

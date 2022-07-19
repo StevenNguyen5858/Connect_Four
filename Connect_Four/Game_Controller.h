@@ -40,16 +40,13 @@ public:
 			color_name = "Blue";
 		}
 	}
-	void get_move(int board[6][7]) {
+	int get_move(int board[6][7]) {
 		if (isBot) {
 			// Hoangs code:
-
+			return 4;
 		}
-		if (!isBot) {
 
-		}
 	}
-
 };
 
 
@@ -60,7 +57,7 @@ public:
 	string text_old;
 	string text_new = "";
 	vector<string> texts = {};
-
+	
 	// Default Constructor:
 	Game_Log() {
 	}
@@ -72,8 +69,10 @@ public:
 	}
 
 	// Helper Methods:
+	void clear() {
+		texts.clear();
+	}
 	void format_text(string new_line) {
-		cout << "FORMATING TEXT" << endl;
 		// Break text info into the various lines.
 		string remaining_text = new_line;
 
@@ -135,12 +134,16 @@ private:
 	vector<player*> players = { &player1, &player2 };
 	int starting_player = 0; // 0(player1), 1(player2)
 
-	int current_player;
+	
 	int board[6][7];
-	bool isMultiplayer = false;
 	void (*refresh)();
 	Game_Log* gl;
+	bool game_paused = false;
+	bool log_paused = false;
 public:
+	int current_player;
+	bool game_started = false;
+	bool isMultiplayer = false;
 
 	// Default Constructor:
 	Game_Controller() {}
@@ -164,7 +167,7 @@ public:
 		}
 	}
 
-	// Method
+	// Methods
 	void draw_element() {
 		// Board outline
 		stroke_weight(2);
@@ -192,13 +195,10 @@ public:
 
 	// (Board) Win Handler
 	int helper_win(int last_token_x, int last_token_y, int vx, int vy) {
-		cout << "COUNTING FORWARDS FROM: " << last_token_x << ":" << last_token_y << endl;
-		cout << "vx:" << vx << " :vy: " << vy << endl;
 		// Find a wall by following a vector <x,y>
 		int curr_x = last_token_x;
 		int curr_y = last_token_y;
 		while (0 <= curr_y && curr_y <= 5 && 0 <= curr_x && curr_x <= 6) {
-			cout << "x:" << curr_x << " :y: " << curr_y << endl;
 			curr_x += vx;
 			curr_y += vy;
 		}
@@ -207,10 +207,8 @@ public:
 		// Go backwards while counting for a win.
 		int player1_count = 0;
 		int player2_count = 0;
-		cout << "COUNTING Backwards FROM: " << curr_x << ":" << curr_y << endl;
-		
+	
 		while (0 <= curr_y && curr_y <= 5 && 0 <= curr_x && curr_x <= 6) {
-			cout << "x:" << curr_x << " :y: " << curr_y << endl;
 			if (board[curr_y][curr_x] == 0) {
 				player1_count += 1;
 			}
@@ -253,6 +251,11 @@ public:
 	}
 
 	// (Board) Events
+	void start_game() {
+		current_player = starting_player;
+		game_started = true;
+		cout << "GAME STARTED" << endl;
+	}
 	void event_parser(string event, vector<string>* keys, vector<string>* values) {
 		string line;
 		vector<string> lines = {};
@@ -278,7 +281,6 @@ public:
 				keys->push_back(temp_key);
 				values->push_back(temp_value);
 
-				cout << temp_key << "" << temp_value << endl;
 				temp_key = "";
 				temp_value = "";
 			}
@@ -306,13 +308,25 @@ public:
 			}
 		}
 		// Then run through turn sequence.
+		if (game_paused) {
+			if (log_paused == false) {
+				gl->push_back("Press Restart Game for new match.");
+				log_paused = true;
+			}
+			return;
+		}
 		if (event1 == "Place_Token") {
-			gl->push_back(place_token(pos, this->current_player));
+			if (players[from]->isBot) {
+				gl->push_back(place_token(players[from]->get_move(board), from));
+			}
+			else {
+				gl->push_back(place_token(pos, from));
+			}
 		}
 	}
-	string place_token(int x, int current_player) {
+	string place_token(int drop_col, int current_player) {
 		string message = "";
-		int drop_col = (x - 9) / 2;
+		
 		if (drop_col > 6 || drop_col < 0) {
 			return "Click a column to make token placement.";
 		}
@@ -323,6 +337,7 @@ public:
 				int result = check_win(drop_col, r);
 				if (result == 0 || result == 1) {
 					message = players[result]->name + " has won this match.";
+					game_paused = true;
 				}
 				else {
 					message = players[current_player]->name + " (" + to_string(drop_col) + "," + to_string(r) + ").";
@@ -337,13 +352,15 @@ public:
 		refresh();
 		return message;
 	}
-
 	void restart() {
 		for (int x = 0; x < 7; x++) {
 			for (int y = 0; y < 6; y++) {
 				board[y][x] = -1;
 			}
 		}
+		game_paused = false;
+		log_paused = false;
+		gl->clear();
 		refresh();
 	}
 
@@ -397,6 +414,9 @@ public:
 	string player2_type() {
 		(player2.isBot) ? player2.name = "Bot2" : player2.name = "Player2";
 		return player2.name;
+	}
+	player active_player() {
+		return *players[current_player];
 	}
 	string starting_player_name() {
 		string player_name;
