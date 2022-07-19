@@ -110,7 +110,8 @@ vector<SNElement*> settings_elements = {
 	&l_app_settings_title,
 };
 
-Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh);
+Game_Log gl_game_log("GAME LOG", 1, 4, 6, 12.5, &function_refresh);
+Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh, &gl_game_log);
 // multiplayer_setup_page elements:
 void function_o_color1();
 void function_o_color2();
@@ -183,14 +184,15 @@ vector<SNElement*> solo_setup_elements = {
 void function_open_home();
 void function_restart();
 
-SNLabel l_game_log("GAME LOG", true, .9, 4, 6, 1, 0.8);
+
+// 1 Game_Log and 1 Game_Controller Object initialized above setups. 
 SNButton b_undo_move("Undo Move", 25, 4, 6, 1, &temp);
 SNButton b_restart_game("Restart Game", 25, 6, 6, 1, &function_restart);
 SNButton b_home_screen("Home Screen", 25, 8, 6, 1, &function_open_home);
 SNLabel l_connect_four("Connect IV", true, 9, 0.5, 14, 1.5, 1.5);
 vector<SNElement*> play_elements = {
 	&l_connect_four,
-	&l_game_log,
+	&gl_game_log,
 	&my_game,
 	&b_undo_move,
 	&b_restart_game,
@@ -458,8 +460,8 @@ void draw_play() {
 		background4();
 	}
 	stroke_weight(2);
-	fill(220);
+	//fill(220);
+	fill(sf::Color::Magenta);
 	stroke(255);
 	rect(25, 10, 6, 6.5, 25);
-	rect(1, 4, 6, 12.5, 25);
 }

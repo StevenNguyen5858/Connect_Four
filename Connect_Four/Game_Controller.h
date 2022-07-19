@@ -5,20 +5,41 @@ class player {
 	// Access specifier:
 public:
 	string name;
-	int color = 0; // 0(black), 1(red)
+	int color_index = 0; // 0(green), 1(red), 2(yellow), 3(blue)
+	sf::Color color = sf::Color::White;
+	string color_name = "White";
 	bool isBot = false;
 	
 	// Default Constructor:
 	player() {
 	}
 	// Parameterized Constructor:
-	player(string name, int color, bool isBot) {
+	player(string name, int color_index, bool isBot) {
 		this->name = name;
-		this->color = color;
+		this->color_index = color_index;
 		this->isBot = isBot;
+		update_color();
 	}
 
 	// Methods:
+	void update_color() {
+		if (color_index == 0) {
+			color = sf::Color(0, 120, 0);
+			color_name = "Green";
+		}
+		if (color_index == 1) {
+			color = sf::Color(255, 0, 0);
+			color_name = "Red";
+		}
+		if (color_index == 2) {
+			color = sf::Color(255, 174, 0);
+			color_name = "Yellow";
+		}
+		if (color_index == 3) {
+			color = sf::Color(0, 255, 255);
+			color_name = "Blue";
+		}
+	}
 	void get_move(int board[6][7]) {
 		if (isBot) {
 			// Hoangs code:
@@ -32,7 +53,77 @@ public:
 };
 
 
+class Game_Log : public SNElement {
+	// Access specifier:
+public:
+	void (*refresh)();
+	string text_old;
+	string text_new = "";
+	vector<string> texts = {};
 
+	// Default Constructor:
+	Game_Log() {
+	}
+	// Parameterized Constructor:
+	Game_Log(string name, double x, double y, double w, double h, void (*refresh)())
+		: SNElement(name, x, y, w, h) {
+		this->refresh = refresh;
+
+	}
+
+	// Helper Methods:
+	void format_text(string new_line) {
+		cout << "FORMATING TEXT" << endl;
+		// Break text info into the various lines.
+		string remaining_text = new_line;
+
+		int char_per_line = 0;
+		float char_w = text_width("M", 0.4);
+
+		for (int I = 0; I < remaining_text.length(); I++) { // Count up until text_width is at max size.
+			if ((0.4 + text_width(remaining_text.substr(0, I), 0.4)) > this->w - 0.4 - char_w) {
+				for (int i = I; i > 0; i--) { // Count down until first space from the end.
+					if (remaining_text.substr(i, 1) == " ") {
+						texts.push_back(remaining_text.substr(0, i + 1));
+						remaining_text = remaining_text.substr(i + 1);
+						I = 0;
+						break;
+					}
+				}
+			}
+			
+		}
+		texts.push_back(remaining_text);
+	}
+	void push_back(string new_line) {
+		format_text(new_line);
+		refresh();
+	}
+	// Virtual Methods:
+	void draw_element() {
+		// Full Backdrop
+		stroke_weight(2);
+		fill(220);
+		stroke(255);
+		rect(x, y, w, h, 25);
+		// Title Backdrop
+		stroke_weight(2);
+		fill(220);
+		stroke(255);
+		rect(x, y, w, 1, 25);
+		// Title
+		fill(255);
+		all_centered_text(name, x, y, w, 1, 0.8);
+
+		// Draw textbox text
+		int max_lines = (this->h - 1) / 0.8;
+		int starting_i = (texts.size() > max_lines) ? texts.size() - max_lines : 0;
+		for (int i = starting_i; i < texts.size(); i++) {
+			int y_offset = i - starting_i;
+			y_centered_text(texts[i], x + 0.2, y + (0.8 * y_offset) + 1, 0.8, 0.4);
+		}
+	}
+};
 
 
 class Game_Controller : public SNElement {
@@ -48,15 +139,18 @@ private:
 	int board[6][7];
 	bool isMultiplayer = false;
 	void (*refresh)();
+	Game_Log* gl;
 public:
 
 	// Default Constructor:
 	Game_Controller() {}
 	// Parameterized Constructor:
-	Game_Controller(string name, double x, double y, double w, double h, void (*refresh)())
+	Game_Controller(string name, double x, double y, double w, double h, void (*refresh)(), Game_Log *gl)
 	: SNElement(name, x, y, w, h){
 		type = "Game Controller";
 		this->refresh = refresh;
+		this->gl = gl;
+
 		player1.~player();
 		new(&player1) player("Player 1", 0, false);
 		player2.~player();
@@ -79,14 +173,15 @@ public:
 		rect(x, y, w, h, 25);
 		// Tokens
 		
-		
+		stroke(50);
+		stroke_weight(2);
 		for (int x = 0; x < 7; x++) {
 			for (int y = 0; y < 6; y++) {
 				if (board[y][x] == 0) {
-					fill(0);
+					fill(player1.color);
 				}
 				else if (board[y][x] == 1) {
-					fill(sf::Color(255, 0, 0));
+					fill(player2.color);
 				} else {
 					fill(32);
 				}
@@ -95,7 +190,7 @@ public:
 		}
 	}
 
-	// (Board) Methods
+	// (Board) Win Handler
 	int helper_win(int last_token_x, int last_token_y, int vx, int vy) {
 		cout << "COUNTING FORWARDS FROM: " << last_token_x << ":" << last_token_y << endl;
 		cout << "vx:" << vx << " :vy: " << vy << endl;
@@ -157,7 +252,8 @@ public:
 		return -1;
 	}
 
-	void event_parser(string event, vector<string> *keys, vector<string> *values) {
+	// (Board) Events
+	void event_parser(string event, vector<string>* keys, vector<string>* values) {
 		string line;
 		vector<string> lines = {};
 		for (int i = 0; i < event.length(); i++) {
@@ -177,8 +273,8 @@ public:
 		for (int i = 0; i < lines.size(); i++) {
 			if (lines[i].substr(0, 1) != "0") {
 				key_end_pos = stoi(lines[i].substr(0, 1));
-				temp_key = lines[i].substr(1, key_end_pos-2);
-				temp_value = lines[i].substr(key_end_pos, lines[i].length()-key_end_pos);
+				temp_key = lines[i].substr(1, key_end_pos - 2);
+				temp_value = lines[i].substr(key_end_pos, lines[i].length() - key_end_pos);
 				keys->push_back(temp_key);
 				values->push_back(temp_value);
 
@@ -211,26 +307,35 @@ public:
 		}
 		// Then run through turn sequence.
 		if (event1 == "Place_Token") {
-
-			place_token(pos, this->current_player);
+			gl->push_back(place_token(pos, this->current_player));
 		}
 	}
-	void place_token(int x, int current_player) {
+	string place_token(int x, int current_player) {
+		string message = "";
 		int drop_col = (x - 9) / 2;
 		if (drop_col > 6 || drop_col < 0) {
-			return;
+			return "Click a column to make token placement.";
 		}
 		for (int r = 5; r >= 0; r--) {
 			if (board[r][drop_col] == -1) {
 				board[r][drop_col] = current_player;
-				this->current_player = (current_player == 0) ? 1 : 0;
-				cout << "CHECKING WINNER: " << check_win(drop_col, r) << endl;
+				this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
+				int result = check_win(drop_col, r);
+				if (result == 0 || result == 1) {
+					message = players[result]->name + " has won this match.";
+				}
+				else {
+					message = players[current_player]->name + " (" + to_string(drop_col) + "," + to_string(r) + ").";
+				}
 				break;
 			}
 			else {
+				message = players[current_player]->name + " attempted invalid move.";
 			}
 		}
+
 		refresh();
+		return message;
 	}
 
 	void restart() {
@@ -244,14 +349,16 @@ public:
 
 	// (Settings) Setter Methods
 	void player1_toggle_color() {
-		(player1.color == 0) ? (player1.color = 1) : (player1.color = 0);
+		(player1.color_index < 3) ? (player1.color_index += 1) : (player1.color_index = 0);
+		player1.update_color();
 		if (player1.color == player2.color) {
 			player2_toggle_color();
 		}
 	}
 	void player2_toggle_color() {
-		(player2.color == 0) ? (player2.color = 1) : (player2.color = 0);
-		if (player1.color == player2.color) {
+		(player2.color_index < 3) ? (player2.color_index += 1) : (player2.color_index = 0);
+		player2.update_color();
+		if (player2.color == player1.color) {
 			player1_toggle_color();
 		}
 	}
@@ -278,14 +385,10 @@ public:
 
 	// (Settings) Getter Methods:
 	string player1_color() {
-		string color;
-		(player1.color == 0) ? (color = "Black") : (color = "Red");
-		return color;
+		return player1.color_name;
 	}
 	string player2_color() {
-		string color;
-		(player2.color == 0) ? (color = "Black") : (color = "Red");
-		return color;
+		return player2.color_name;
 	}
 	string player1_type() {
 		(player1.isBot) ? player1.name = "Bot1" : player1.name = "Player1";
@@ -301,3 +404,5 @@ public:
 		return player_name;
 	}
 };
+
+
