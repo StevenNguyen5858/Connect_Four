@@ -423,6 +423,7 @@ class SNButton : public SNElement {
 	// Access specifier:
 public:
 	bool is_selected = false;
+	bool is_centered = false;
 	void (*function)();
 
 	// Default Constructor:
@@ -434,6 +435,12 @@ public:
 		: SNElement(name, x, y, w, h) {
 		this->type = "SNButton";
 		this->function = function;
+	}
+	SNButton(string name, double x, double y, double w, double h, bool is_centered, void (*function)())
+		: SNElement(name, x, y, w, h) {
+		this->type = "SNButton";
+		this->function = function;
+		this->is_centered = is_centered;
 	}
 
 	// Methods:
@@ -449,7 +456,12 @@ public:
 		stroke_weight(2);
 		rect(x, y, w, h, 25);
 		fill(255);
-		y_centered_text(name, x+0.2, y, h, h*.6);
+		if (is_centered) {
+			all_centered_text(name, x, y, w, h, h * .6);
+		}
+		else {
+			y_centered_text(name, x + 0.2, y, h, h * .6);
+		}
 	}
 };
 
