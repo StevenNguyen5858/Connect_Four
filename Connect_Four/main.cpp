@@ -73,22 +73,21 @@ void keypressed(string key) {
 // Main() driver should be left in background. 
 // Use the above space and functions to create your program.
 int main() {
-	my_app.add_page(&SNEM);
 	cout << "W: " << sf::VideoMode::getDesktopMode().width * .75 << " H: " << sf::VideoMode::getDesktopMode().height * .75 << endl;
 	setup_window(sf::VideoMode::getDesktopMode().width*.75, sf::VideoMode::getDesktopMode().height*.75, "Connect IV");
-	bool drawOnce = true;
+	
+	setup();
+	my_app.refresh_page();
+
+	sf::Time time_per_frame = sf::milliseconds(1000 / 60);
+	my_app.add_page(&SNEM);
 	SNEM_current_rb = &rb_dev;
 	rb_dev.is_selected = true;
 
-	setup();
-
 	// Draw Loop:
 	while (main_window.isOpen()) {
-		// First page is draw here.
-		if (drawOnce) {
-			my_app.refresh_page();
-			drawOnce = false;
-		}
+		// Limit App refresh
+		sf::sleep(time_per_frame);
 
 		sf::Event event;
 		// Event Handler:
@@ -99,7 +98,7 @@ int main() {
 			if (event.type == sf::Event::Resized) {
 				refresh_grid();
 				main_window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
-				drawOnce = true;
+				my_app.refresh_page();
 			}
 			if (event.type == sf::Event::MouseButtonPressed) {
 				double mouse_x = sf::Mouse::getPosition(main_window).x;
