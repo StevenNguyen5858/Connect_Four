@@ -393,6 +393,7 @@ void function_restart() {
 	my_game.restart();
 }
 void function_open_home() {
+	my_game.game_started = false;
 	my_game.restart();
 	if (my_game.isMultiplayer) {
 		my_app.activate_page(&multiplayer_lobby_page);
