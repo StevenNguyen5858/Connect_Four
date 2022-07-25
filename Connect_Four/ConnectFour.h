@@ -41,12 +41,12 @@ vector<SNElement*> title_elements = {
 void function_start_multiplayer_match();
 void function_setup_game();
 void function_lobby_to_home();
-// void function_open_options() <- a duplicate use
+void function_mlobby_to_options();
 
 SNOption o_start_match("Start Match", 0, 0, 0, 0, &function_start_multiplayer_match);
 SNOption o_setup_game("Setup Game", 0, 0, 0, 0, &function_setup_game);
 SNOption o_spacer(" ", 0, 0, 0, 0, &temp);
-SNOption o_m_options("Options", 0, 0, 0, 0, &function_open_multiplayer);
+SNOption o_m_options("Options", 0, 0, 0, 0, &function_mlobby_to_options);
 SNOption o_mlobby_to_home("Title Screen", 0, 0, 0, 0, &function_lobby_to_home);
 vector<SNOption*> multiplayer_lobby_menu_options = {
 	&o_start_match,
@@ -55,10 +55,12 @@ vector<SNOption*> multiplayer_lobby_menu_options = {
 	&o_m_options,
 	&o_mlobby_to_home,
 };
-SNMenu m_multiplayer_lobby_menu("Multiplayer Menu", 4, 2, 0, 1, multiplayer_lobby_menu_options, &function_refresh);
-SNLabel l_multiplayer_lobby_title("Multiplayer", false, 4, 0, 0, 2, 1.5);
+SNMenu m_multiplayer_lobby_menu("Multiplayer Menu", 4, 2.5, 0, 1, multiplayer_lobby_menu_options, &function_refresh);
+lobby m_lobby("2 Players (2Max)", 16.2, 2.5, 12, 1, my_game.players);
+SNLabel l_multiplayer_lobby_title("Multiplayer", false, 4, 0.5, 0, 2, 1.5);
 vector<SNElement*> multiplayer_lobby_elements = {
 	&m_multiplayer_lobby_menu,
+	&m_lobby,
 	&l_multiplayer_lobby_title,
 };
 
@@ -67,10 +69,12 @@ vector<SNElement*> multiplayer_lobby_elements = {
 // void function_start_match() <- a duplicate use
 void function_setup_solo_game();
 void function_start_solo_match();
+void function_back();
+void function_slobby_to_options();
 
 SNOption o_s_start_match("Start Match", 0, 0, 0, 0, &function_start_solo_match);
 SNOption o_s_setup_game("Setup Game", 0, 0, 0, 0, &function_setup_solo_game);
-SNOption o_s_options("Options", 0, 0, 0, 0, &function_refresh);
+SNOption o_s_options("Options", 0, 0, 0, 0, &function_slobby_to_options);
 SNOption o_slobby_to_home("Title Screen", 0, 0, 0, 0, &function_lobby_to_home);
 vector<SNOption*> solo_lobby_menu_options = {
 	&o_s_start_match,
@@ -79,8 +83,8 @@ vector<SNOption*> solo_lobby_menu_options = {
 	&o_s_options,
 	&o_slobby_to_home,
 };
-SNMenu m_solo_lobby_menu("Solo Menu", 4, 2, 0, 1, solo_lobby_menu_options, &function_refresh);
-SNLabel l_solo_lobby_title("Solo Play", false, 4, 0, 0, 2, 1.5);
+SNMenu m_solo_lobby_menu("Solo Menu", 4, 2.5, 0, 1, solo_lobby_menu_options, &function_refresh);
+SNLabel l_solo_lobby_title("Solo Play", false, 4, 0.5, 0, 2, 1.5);
 vector<SNElement*> solo_lobby_elements = {
 	&m_solo_lobby_menu,
 	&l_solo_lobby_title,
@@ -97,12 +101,13 @@ bool uses_backgrounds = true;
 string str_uses_backgrounds = (uses_backgrounds) ? "true" : "false";
 SNOption o_dev_grid("Enable-Developer-Tools:", 0, 0, 0, 0, str_uses_dev_grid, &function_toggle_dev_grid);
 SNOption o_use_backgrounds("Use-Backgrounds:", 0, 0, 0, 0, str_uses_backgrounds, &function_toggle_backgrounds);
-SNOption o_settings_to_title("Title Screen", 0, 0, 0, 0, &function_settings_to_title);
+SNOption o_back("Back", 0, 0, 0, 0, &function_back);
 vector<SNOption*> settings_menu_options = {
 	&o_dev_grid,
 	&o_use_backgrounds,
 	&o_spacer,
-	&o_settings_to_title,
+	&o_spacer,
+	&o_back,
 };
 SNMenu m_settings_menu("settings menu", 4, 3, 0, 1, settings_menu_options, &function_refresh);
 SNLabel l_app_settings_title("App Settings", true, 9, 0.5, 14, 1.5, 1.5);
@@ -226,6 +231,7 @@ void setup_solo_lobby();
 void draw_solo_lobby();
 SNPage solo_lobby_page("Solo Lobby Page", solo_lobby_elements, &setup_solo_lobby, &draw_solo_lobby);
 
+
 // multiplayer_setup_page declarations;
 void setup_multiplayer_setup();
 void draw_multiplayer_setup();
@@ -254,7 +260,12 @@ void function_open_multiplayer() {
 void function_open_solo_play() {
 	my_app.activate_page(&solo_lobby_page);
 }
+SNPage* previous_page = &title_page;
+void function_back() {
+	my_app.activate_page(previous_page);
+}
 void function_open_options() {
+	previous_page = &title_page;
 	my_app.activate_page(&settings_page);
 }
 void function_refresh() {
@@ -288,20 +299,29 @@ void function_start_multiplayer_match() {
 void function_setup_game() {
 	my_app.activate_page(&multiplayer_setup_page);
 }
+void function_mlobby_to_options() {
+	previous_page = &multiplayer_lobby_page;
+	my_app.activate_page(&settings_page);
+}
 void function_lobby_to_home() {
 	my_app.activate_page(&title_page);
 }
 
 
 // solo_lobby_page element functions.
-void function_setup_solo_game() {
-	my_app.activate_page(&solo_setup_page);
-}
 void function_start_solo_match() {
 	my_game.isMultiplayer = false;
 	my_game.start_game();
 	my_app.activate_page(&play_page);
 }
+void function_setup_solo_game() {
+	my_app.activate_page(&solo_setup_page);
+}
+void function_slobby_to_options() {
+	previous_page = &solo_lobby_page;
+	my_app.activate_page(&settings_page);
+}
+
 
 
 // multiplayer_setup_page element functions.

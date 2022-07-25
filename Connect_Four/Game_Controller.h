@@ -5,10 +5,15 @@ class player {
 	// Access specifier:
 public:
 	string name;
+	bool isBot = false;
+	int win_score = 0;
+
 	int color_index = 0; // 0(green), 1(red), 2(yellow), 3(blue)
 	sf::Color color = sf::Color::White;
 	string color_name = "White";
-	bool isBot = false;
+	
+	
+
 	
 	// Default Constructor:
 	player() {
@@ -131,7 +136,6 @@ private:
 	int bot_difficulty = 0; // 0(easy), 1(medium), 2(hard)
 	player player1;
 	player player2;
-	vector<player*> players = { &player1, &player2 };
 	int starting_player = 0; // 0(player1), 1(player2)
 
 	
@@ -141,6 +145,7 @@ private:
 	bool game_paused = false;
 	bool log_paused = false;
 public:
+	vector<player*> players = { &player1, &player2 };
 	int current_player;
 	bool game_started = false;
 	bool isMultiplayer = false;
@@ -426,3 +431,41 @@ public:
 };
 
 
+class lobby : public SNElement {
+	// Access specifier:
+public:
+	string name;
+	vector<player*> players = {};
+	double line_size = 0.8;
+	double text_size = 0.6;
+
+	// Default Constructor:
+	lobby() {
+	}
+	// Parameterized Constructor:
+	lobby(string name, double x, double y, double w, double h, vector<player*> players)
+		: SNElement(name, x, y, w, h) {
+		this->name = name;
+		this->players = players;
+	}
+
+	// Methods:
+	void draw_element() {
+		fill(255);
+		stroke_weight(1);
+		y_centered_text(name, x, y, line_size, text_size);
+
+		stroke(0);
+		for (int i = 0; i < players.size(); i++) {
+			fill(players[i]->color);
+			rect(x, y + (line_size * (i + 1)), w, line_size,50);
+		}
+		//rect(x, y + (line_size * (i + 1)), line_size, line_size);
+		fill(255);
+		for (int i = 0; i < players.size(); i++) {
+			y_centered_text(players[i]->name, x + line_size + 0.2, y + (line_size * (i + 1)), line_size, text_size);
+			double score_xpos = x + w - text_width(to_string(players[i]->win_score), text_size) - 0.2;
+			y_centered_text(to_string(players[i]->win_score), score_xpos, y + (line_size * (i + 1)), line_size, text_size);
+		}
+	}
+};
