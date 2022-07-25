@@ -47,8 +47,7 @@ public:
 	}
 	int get_move(int board[6][7]) {
 		if (isBot) {
-			// Hoangs code:
-			return 4;
+			return AI_move(board, color_index);
 		}
 
 	}
