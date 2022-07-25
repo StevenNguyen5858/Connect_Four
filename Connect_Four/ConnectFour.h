@@ -196,7 +196,7 @@ void function_restart();
 // 1 Game_Log and 1 Game_Controller Object initialized above setups. 
 SNButton b_undo_move("Undo Move", 25, 4, 6, 1, &function_undo);
 SNButton b_restart_game("Restart Game", 25, 6, 6, 1, &function_restart);
-SNButton b_home_screen("Home Screen", 25, 8, 6, 1, &function_open_home);
+SNButton b_home_screen("Return Lobby", 25, 8, 6, 1, &function_open_home);
 SNLabel l_connect_four("Connect IV", true, 9, 0.5, 14, 1.5, 1.5);
 lobby lobby_scoreboard("2 Players (2Max)", 25, 10, 6, 1, my_game.players);
 vector<SNElement*> play_elements = {
