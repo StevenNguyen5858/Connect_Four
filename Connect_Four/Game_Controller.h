@@ -1,4 +1,5 @@
 #pragma once
+#include <stack>
 #include "SNElement.h"
 #include "AI_bot.h"
 
@@ -59,7 +60,9 @@ public:
 	string text_old;
 	string text_new = "";
 	vector<string> texts = {};
-	
+	vector<pair<int, int>> game_turns = {};
+	stack<pair<int, int>> popped_turns = {};
+
 	// Default Constructor:
 	Game_Log() {
 	}
@@ -99,6 +102,20 @@ public:
 	void push_back(string new_line) {
 		format_text(new_line);
 		refresh();
+	}
+	void log_turn(pair<int, int> cord_pair) {
+		game_turns.push_back(cord_pair);
+	}
+	pair<int, int> pop_previous_turn() {
+		if (game_turns.empty() == false) {
+			pair<int, int> previous_turn = game_turns.back();
+			game_turns.pop_back();
+			texts.pop_back();
+			popped_turns.push(previous_turn);
+			return previous_turn;
+		}
+		// If empty, cannot pop turn.
+		return make_pair(-1, -1);
 	}
 	// Virtual Methods:
 	void draw_element() {
@@ -334,6 +351,7 @@ public:
 		}
 		for (int r = 5; r >= 0; r--) {
 			if (board[r][drop_col] == -1) {
+				gl->log_turn(make_pair(r, drop_col));
 				board[r][drop_col] = current_player;
 				this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
 				int result = check_win(drop_col, r);
@@ -354,6 +372,15 @@ public:
 
 		refresh();
 		return message;
+	}
+	void undo() { // Undo move, and remove last message from log.
+		if (game_paused || log_paused) {
+			return;
+		}
+		pair<int,int> cord_pair = gl->pop_previous_turn();
+		board[cord_pair.first][cord_pair.second] = -1;
+		this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
+		refresh();
 	}
 	void restart() {
 		for (int x = 0; x < 7; x++) {
