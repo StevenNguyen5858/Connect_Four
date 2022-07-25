@@ -76,6 +76,12 @@ sf::Image radio_full;
 sf::Image bg2;
 sf::Image bg4;
 
+sf::Image blue_icon;
+sf::Image green_icon;
+sf::Image red_icon;
+sf::Image yellow_icon;
+vector<sf::Image*> player_icons = { &green_icon, &red_icon, &yellow_icon, &blue_icon };
+
 // Sets up the basic screen dimentions, then on the front end use is setting grid units sw and sh.
 void refresh_grid() {
 	int screen_width = main_window.getSize().x;
@@ -111,6 +117,23 @@ void setup_window(int screen_width, int screen_height, string title) {
 	}
 	if (!icon_video.loadFromFile("SNElement Resources/VideoIcon.png")) {
 		sf::err() << "Couldn't load VideoIcon\n";
+		bool couldnt_load = true;
+	}
+
+	if (!blue_icon.loadFromFile("SNElement Resources/Blue Frames/tile000.png")) {
+		sf::err() << "Couldn't load blue icon\n";
+		bool couldnt_load = true;
+	}
+	if (!green_icon.loadFromFile("SNElement Resources/Green Frames/tile000.png")) {
+		sf::err() << "Couldn't load blue icon\n";
+		bool couldnt_load = true;
+	}
+	if (!red_icon.loadFromFile("SNElement Resources/Red Frames/tile000.png")) {
+		sf::err() << "Couldn't load blue icon\n";
+		bool couldnt_load = true;
+	}
+	if (!yellow_icon.loadFromFile("SNElement Resources/Yellow Frames/tile000.png")) {
+		sf::err() << "Couldn't load blue icon\n";
 		bool couldnt_load = true;
 	}
 
@@ -314,7 +337,7 @@ void image(sf::Image* img, double x, double y) {
 }
 // Draws an sf::image object to buffer with given width and height.
 // Images scale best by factors of two.
-void image(sf::Image* img, double x, double y, int new_width, int new_height) { 
+void image(sf::Image* img, double x, double y, double new_width, double new_height) { 
 	double scale_w = (float)(new_width * sw) / img->getSize().x;
 	double scale_h = (float)(new_height * sh) / img->getSize().y;
 	sf::Texture temp;

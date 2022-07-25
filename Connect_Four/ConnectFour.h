@@ -56,11 +56,11 @@ vector<SNOption*> multiplayer_lobby_menu_options = {
 	&o_mlobby_to_home,
 };
 SNMenu m_multiplayer_lobby_menu("Multiplayer Menu", 4, 2.5, 0, 1, multiplayer_lobby_menu_options, &function_refresh);
-lobby m_lobby("2 Players (2Max)", 16.2, 2.5, 12, 1, my_game.players);
+lobby lobby_multiplayer("2 Players (2Max)", 16, 2.5, 12, 1, my_game.players);
 SNLabel l_multiplayer_lobby_title("Multiplayer", false, 4, 0.5, 0, 2, 1.5);
 vector<SNElement*> multiplayer_lobby_elements = {
 	&m_multiplayer_lobby_menu,
-	&m_lobby,
+	&lobby_multiplayer,
 	&l_multiplayer_lobby_title,
 };
 
@@ -84,10 +84,12 @@ vector<SNOption*> solo_lobby_menu_options = {
 	&o_slobby_to_home,
 };
 SNMenu m_solo_lobby_menu("Solo Menu", 4, 2.5, 0, 1, solo_lobby_menu_options, &function_refresh);
+lobby lobby_solo("2 Players (2Max)", 16, 2.5, 12, 1, my_game.players);
 SNLabel l_solo_lobby_title("Solo Play", false, 4, 0.5, 0, 2, 1.5);
 vector<SNElement*> solo_lobby_elements = {
 	&m_solo_lobby_menu,
 	&l_solo_lobby_title,
+	&lobby_solo,
 };
 
 
@@ -195,13 +197,15 @@ SNButton b_undo_move("Undo Move", 25, 4, 6, 1, &temp);
 SNButton b_restart_game("Restart Game", 25, 6, 6, 1, &function_restart);
 SNButton b_home_screen("Home Screen", 25, 8, 6, 1, &function_open_home);
 SNLabel l_connect_four("Connect IV", true, 9, 0.5, 14, 1.5, 1.5);
+lobby lobby_scoreboard("2 Players (2Max)", 25, 10, 6, 1, my_game.players);
 vector<SNElement*> play_elements = {
 	&l_connect_four,
 	&gl_game_log,
 	&my_game,
 	&b_undo_move,
 	&b_restart_game,
-	&b_home_screen
+	&b_home_screen,
+	&lobby_scoreboard,
 };
 
 
@@ -522,5 +526,5 @@ void draw_play() {
 	//fill(220);
 	fill(sf::Color::Magenta);
 	stroke(255);
-	rect(25, 10, 6, 6.5, 25);
+	//rect(25, 10, 6, 6.5, 25);
 }

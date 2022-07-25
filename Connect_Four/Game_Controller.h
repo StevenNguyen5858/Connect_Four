@@ -341,6 +341,7 @@ public:
 				this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
 				int result = check_win(drop_col, r);
 				if (result == 0 || result == 1) {
+					players[result]->win_score += 100;
 					message = players[result]->name + " has won this match.";
 					game_paused = true;
 				}
@@ -453,7 +454,7 @@ public:
 	void draw_element() {
 		fill(255);
 		stroke_weight(1);
-		y_centered_text(name, x, y, line_size, text_size);
+		y_centered_text(name, x+0.2, y, line_size, text_size);
 
 		stroke(0);
 		for (int i = 0; i < players.size(); i++) {
@@ -466,6 +467,10 @@ public:
 			y_centered_text(players[i]->name, x + line_size + 0.2, y + (line_size * (i + 1)), line_size, text_size);
 			double score_xpos = x + w - text_width(to_string(players[i]->win_score), text_size) - 0.2;
 			y_centered_text(to_string(players[i]->win_score), score_xpos, y + (line_size * (i + 1)), line_size, text_size);
+		}
+
+		for (int i = 0; i < players.size(); i++) {
+			image(player_icons[players[i]->color_index], x + 0.2, y + (line_size * (i + 1)), line_size, line_size);
 		}
 	}
 };
