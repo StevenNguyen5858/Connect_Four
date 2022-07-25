@@ -158,6 +158,7 @@ private:
 	Game_Log* gl;
 	bool game_paused = false;
 	bool log_paused = false;
+	double hover_p = 15.25;
 public:
 	vector<player*> players = { &player1, &player2 };
 	int current_player;
@@ -210,6 +211,7 @@ public:
 				circle(this->x+.5+(2*x), this->y+.5+(2*y), 1.5);
 			}
 		}
+		image(player_icons[players[current_player]->color_index], hover_p, 2.25, 1.5, 1.5);
 	}
 
 	// (Board) Win Handler
@@ -309,7 +311,8 @@ public:
 		string event1;
 		int from;
 		int pos;
-
+		
+		//7Event:Mouse_Move,9Hover_P:" + to_string(grid_x)
 		// Process game events first.
 		vector<string> keys = {};
 		vector<string> values = {};
@@ -324,6 +327,12 @@ public:
 			}
 			if (keys[i] == "Pos") {
 				pos = stoi(values[i]);
+			}
+			if (keys[i] == "Hover_P") {
+				double temp_hover_p = stoi(values[i]);
+				if (x + 0.25 <= temp_hover_p && temp_hover_p < x + w - 0.25) {
+					hover_p = temp_hover_p + 0.25;
+				}
 			}
 		}
 		// Then run through turn sequence.
@@ -342,6 +351,21 @@ public:
 				gl->push_back(place_token(pos, from));
 			}
 		}
+		if (event1 == "Mouse_Move") {
+			placement_indicator(hover_p);
+		}
+	}
+	void placement_indicator(double hover_pos) {
+		refresh();
+		/*
+		cout << "TESTING MOUSE MOVE INDICATOR:" << hover_pos << endl;
+		
+		fill(255);
+		stroke(0);
+		stroke_weight(2);
+		rect(1,1,10,10);
+		refresh();
+		*/
 	}
 	string place_token(int drop_col, int current_player) {
 		string message = "";
@@ -390,6 +414,7 @@ public:
 		}
 		game_paused = false;
 		log_paused = false;
+		hover_p = 15.25;
 		gl->clear();
 		refresh();
 	}
@@ -485,7 +510,7 @@ public:
 			fill(players[i]->color);
 			rect(x, y + (line_size * (i + 1)), w, line_size,50);
 		}
-		//rect(x, y + (line_size * (i + 1)), line_size, line_size);
+		
 		fill(255);
 		for (int i = 0; i < players.size(); i++) {
 			y_centered_text(players[i]->name, x + line_size + 0.2, y + (line_size * (i + 1)), line_size, text_size);

@@ -65,6 +65,10 @@ void mouse_released(double mouse_x, double mouse_y) {
 
 }
 
+// Run when mouse is moved.
+void mouse_moved(double mouse_x, double mouse_y) {
+	my_app.current_page->mouse_move(mouse_x, mouse_y);
+}
 void keypressed(string key) {
 	my_app.current_page->handle_keys(key);
 }
@@ -110,6 +114,11 @@ int main() {
 				double mouse_x = sf::Mouse::getPosition(main_window).x;
 				double mouse_y = sf::Mouse::getPosition(main_window).y;
 				mouse_released(mouse_x, mouse_y);
+			}
+			if (event.type == sf::Event::MouseMoved) {
+				double mouse_x = sf::Mouse::getPosition(main_window).x;
+				double mouse_y = sf::Mouse::getPosition(main_window).y;
+				mouse_moved(mouse_x, mouse_y);
 			}
 			if (event.type == sf::Event::KeyPressed) {
 				string key = " ";

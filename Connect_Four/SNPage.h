@@ -95,7 +95,7 @@ public:
 			if (e->type == "Game Controller") {
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
-					int drop_col = (grid_x - 9) / 2;
+					int drop_col = floor((grid_x - 9) / 2);
 					GC_ptr->game_event("6From:"+ to_string(my_game.current_player) + ",7Event:Place_Token,5Pos:" + to_string(drop_col));
 					//GC_ptr->place_token(grid_x);
 					cout << e->name << " has been pressed." << endl;
@@ -135,6 +135,21 @@ public:
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
 					//GC_ptr->place_token(grid_x);
+					cout << e->name << " has been pressed." << endl;
+				}
+			}
+		}
+	}
+	void mouse_move(double mouse_x, double mouse_y) {
+		//"Hover_Pos"  "Mouse_Move"
+		double grid_x = mouse_x / sw;
+		double grid_y = mouse_y / sh;
+		for (int i = 0; i < elements.size(); i++) {
+			SNElement* e = elements[i];
+			if (e->type == "Game Controller") {
+				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
+					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
+					GC_ptr->game_event("7Event:Mouse_Move,9Hover_P:" + to_string(grid_x));
 					cout << e->name << " has been pressed." << endl;
 				}
 			}
