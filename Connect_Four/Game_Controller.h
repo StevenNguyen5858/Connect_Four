@@ -1,5 +1,7 @@
 #pragma once
 #include "SNElement.h"
+#include "AI_bot.h"
+
 
 class player {
 	// Access specifier:
@@ -11,9 +13,6 @@ public:
 	int color_index = 0; // 0(green), 1(red), 2(yellow), 3(blue)
 	sf::Color color = sf::Color::White;
 	string color_name = "White";
-	
-	
-
 	
 	// Default Constructor:
 	player() {
@@ -49,7 +48,6 @@ public:
 		if (isBot) {
 			return AI_move(board, color_index);
 		}
-
 	}
 };
 

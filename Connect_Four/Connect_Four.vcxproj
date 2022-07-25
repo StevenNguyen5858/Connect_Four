@@ -148,6 +148,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AI_bot.h" />
     <ClInclude Include="ConnectFour.h" />
     <ClInclude Include="Game_Controller.h" />
     <ClInclude Include="SNElement.h" />

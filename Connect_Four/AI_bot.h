@@ -1,4 +1,3 @@
-// base on the connect 4 of  Stratzilla, Stratzilla github: https://github.com/stratzilla/connect-four
 #include <stdio.h>
 #include <iostream>
 #include <vector>
@@ -11,7 +10,24 @@
 
 using namespace std;
 
-// function define
+
+/*	Group0: Algorithm reference.
+*
+*	Group1: Function Declarations.
+*
+*	Group2: Function Initializations.*/
+
+
+// ********************************************************************************************
+// Group0: Algorithm reference.
+
+/*  This AI Code is based on an Algorithm created by Stratzilla
+*   Stratzilla github: https://github.com/stratzilla/connect-four */
+
+
+// ********************************************************************************************
+// Group1: Function Declarations.
+
 int AI_move(int board[6][7], int color_index);
 int find_opponent_color(int board[6][7], int AI);
 array<int, 2> mini_max(int board[6][7], int depth, int alpha, int beta, int AI_player, int opponent, int minimax_player, int turn);
@@ -21,7 +37,10 @@ int tabScore(int board[6][7], int AI_player, int opponent, int p);
 int scoreSet(vector< int> v, int AI_player, int opponent, int p);
 
 
-// the one return column AI will play
+// ********************************************************************************************
+// Group1: Function Initializations.
+
+// Returns column for AI's turn.
 int AI_move(int board[6][7], int color_index) {
 	//variable
 	//turn used in the min_max algorithm to find the best move
@@ -49,7 +68,7 @@ int AI_move(int board[6][7], int color_index) {
 	}
 }
 
-// find the color of the opponent
+// Returns opponent color.
 int find_opponent_color(int board[6][7], int AI_color) {
 	for (int r = 0; r < 6; r++) {
 		for (int c = 0; c < 7; c++) {
@@ -66,18 +85,7 @@ int find_opponent_color(int board[6][7], int AI_color) {
 	}
 }
 
-// the minmax algorithm
-/**
-depth is the depth of the search,
-alf is alpha
-bet is beta
-AI_player is the value of the token AI_play
-opponent is the value of the opponent token
-min_max_player decide who place the token
-turn is the current turn atm.
-
-*/
-
+// Win Checking Algorithm. True/False
 bool winning_move(int board[6][7], int player) {
 	vector<int> x_vectors = { 0,1,1,1 };
 	vector<int> y_vectors = { 1,0,1,-1 };
@@ -93,7 +101,7 @@ bool winning_move(int board[6][7], int player) {
 	return false;
 }
 
-//check win function
+// Win Checking Helper. Returns color of winner or -1 for no winner.
 int check_four(int board[6][7], int row, int col, int moveX, int moveY, int player) {
 	//check if it will go outside the board or not, if outside, return -1 (no one win)
 	if ((row + moveY * 3) < 0) {

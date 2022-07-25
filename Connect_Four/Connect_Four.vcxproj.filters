@@ -32,5 +32,8 @@
     <ClInclude Include="SNPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AI_bot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
