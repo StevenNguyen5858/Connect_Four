@@ -386,7 +386,7 @@ public:
 		(player2.isBot) ? (player2.isBot = false) : (player2.isBot = true);
 	}
 	void toggle_starting_player() {
-		(starting_player == 1) ? starting_player = 2 : starting_player = 1;
+		(starting_player == 0) ? starting_player = 1 : starting_player = 0;
 	}
 	void set_bot_difficulty(string difficulty) {
 		if (difficulty == "Easy") {
@@ -420,7 +420,7 @@ public:
 	}
 	string starting_player_name() {
 		string player_name;
-		(starting_player == 1) ? player_name = player1.name : player_name = player2.name;
+		(starting_player == 0) ? player_name = player1.name : player_name = player2.name;
 		return player_name;
 	}
 };

@@ -378,6 +378,26 @@ void function_open_home() {
 // *******************************************************************************************************
 // Group4 : SNEPages' function initializations. Pages: title_page, solo_setup_page, play_page
 
+// Menu draw helper functions
+void menu_nav_explainers() {
+	// Navigation explainers
+	fill(0);
+	stroke(255);
+	stroke_weight(1);
+	// KeyBoxes: Enter, Esc
+	rect(4.2, 16.2, 1.8, 0.6, 100);
+	rect(8.8, 16.2, 1.2, 0.6, 100);
+
+	fill(255);
+	// Enter
+	all_centered_text("Enter", 4.2, 16.2, 1.8, 0.6, 0.4);
+	y_centered_text("Select", 6.2, 16.1, 0.8, 0.5);
+	// Esc
+	all_centered_text("Esc", 8.8, 16.2, 1.2, 0.6, 0.4);
+	y_centered_text("Exit", 10.2, 16.1, 0.8, 0.5);
+}
+
+
 // title_page SNPage functions
 void helper_line_accent() {
 	fill(255);
@@ -400,6 +420,7 @@ void draw_title() {
 	if (uses_backgrounds) {
 		background2();
 	}
+	menu_nav_explainers();
 }
 
 
@@ -413,6 +434,7 @@ void draw_settings() {
 	}
 	// Accent lines
 	helper_line_accent();
+	menu_nav_explainers();
 }
 
 
@@ -424,6 +446,7 @@ void draw_multiplayer_lobby() {
 	if (uses_backgrounds) {
 		background4();
 	}
+	menu_nav_explainers();
 }
 
 
@@ -435,6 +458,7 @@ void draw_solo_lobby() {
 	if (uses_backgrounds) {
 		background2();
 	}
+	menu_nav_explainers();
 }
 
 
@@ -446,6 +470,7 @@ void draw_multiplayer_setup() {
 	if (uses_backgrounds) {
 		background4();
 	}
+	menu_nav_explainers();
 	// Accent lines
 	helper_line_accent();
 }
@@ -459,6 +484,7 @@ void draw_solo_setup() {
 	if (uses_backgrounds) {
 		background2();
 	}
+	menu_nav_explainers();
 	// Accent lines
 	helper_line_accent();
 }
