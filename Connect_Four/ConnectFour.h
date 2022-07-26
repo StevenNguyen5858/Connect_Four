@@ -191,14 +191,17 @@ vector<SNElement*> solo_setup_elements = {
 void function_open_home();
 void function_undo();
 void function_restart();
+void function_pause_review();
 
 
 // 1 Game_Log and 1 Game_Controller Object initialized above setups. 
 SNButton b_undo_move("Undo Move", 25, 4, 6, 1, &function_undo);
 SNButton b_restart_game("Restart Game", 25, 6, 6, 1, &function_restart);
-SNButton b_home_screen("Return Lobby", 25, 8, 6, 1, &function_open_home);
+SNButton b_pause_review("Pause & Review", 25, 8, 6, 1, &function_pause_review);
+SNButton b_home_screen("Return Lobby", 25, 10, 6, 1, &function_open_home);
+
 SNLabel l_connect_four("Connect IV", true, 9, 0.5, 14, 1.5, 1.5);
-lobby lobby_scoreboard("2 Players (2Max)", 25, 10, 6, 1, my_game.players);
+lobby lobby_scoreboard("2 Players (2Max)", 25, 12, 6, 1, my_game.players);
 vector<SNElement*> play_elements = {
 	&l_connect_four,
 	&gl_game_log,
@@ -206,6 +209,27 @@ vector<SNElement*> play_elements = {
 	&b_undo_move,
 	&b_restart_game,
 	&b_home_screen,
+	&b_pause_review,
+	&lobby_scoreboard,
+};
+
+
+// review_page elements:
+void function_resume_game();
+void function_prev_move();
+void function_next_move();
+
+SNButton b_next_move("Next Move", 25, 4, 6, 1, &function_next_move);
+SNButton b_prev_move("Prev. Move", 25, 6, 6, 1, &function_prev_move);
+SNButton b_return_game("Resume Game", 25, 8, 6, 1, &function_resume_game);
+SNLabel l_game_review("Game Review", true, 9, 0.5, 14, 1.5, 1.5);
+vector<SNElement*> review_elements = {
+	&l_game_review,
+	&gl_game_log,
+	&my_game,
+	&b_next_move,
+	&b_prev_move,
+	&b_return_game,
 	&lobby_scoreboard,
 };
 
@@ -253,6 +277,12 @@ SNPage solo_setup_page("Solo Setup Page", solo_setup_elements, &setup_solo_setup
 void setup_play();
 void draw_play();
 SNPage play_page("Play Page", play_elements, &setup_play, &draw_play);
+
+
+// review_page declarations
+void setup_review();
+void draw_review();
+SNPage review_page("Review Page", review_elements, &setup_play, &draw_review);
 
 
 // *******************************************************************************************************
@@ -402,7 +432,27 @@ void function_open_home() {
 		my_app.activate_page(&solo_lobby_page);
 	}
 }
+void function_pause_review() {
+	my_game.game_paused = true;
+	my_game.log_paused = true;
+	my_app.activate_page(&review_page);
+}
 
+// review_page element functions.
+void function_prev_move() {
+	my_game.previous_move();
+}
+void function_next_move() {
+	my_game.next_move();
+}
+void function_resume_game() {
+	my_game.revert_review();
+	if (!my_game.player_has_won) {
+		my_game.game_paused = false;
+		my_game.log_paused = false;
+	}
+	my_app.activate_page(&play_page);
+}
 
 // *******************************************************************************************************
 // Group4 : SNEPages' function initializations. Pages: title_page, solo_setup_page, play_page
@@ -533,3 +583,8 @@ void draw_play() {
 	stroke(255);
 	//rect(25, 10, 6, 6.5, 25);
 }
+
+
+// review_page SNPage functions 
+void setup_review() {}
+void draw_review() {}

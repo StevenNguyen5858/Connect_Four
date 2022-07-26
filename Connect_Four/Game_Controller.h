@@ -60,8 +60,10 @@ public:
 	string text_old;
 	string text_new = "";
 	vector<string> texts = {};
+	stack<string> popped_texts = {};
 	vector<pair<int, int>> game_turns = {};
 	stack<pair<int, int>> popped_turns = {};
+	
 
 	// Default Constructor:
 	Game_Log() {
@@ -110,12 +112,30 @@ public:
 		if (game_turns.empty() == false) {
 			pair<int, int> previous_turn = game_turns.back();
 			game_turns.pop_back();
-			texts.pop_back();
 			popped_turns.push(previous_turn);
+
+			string text = texts.back();
+			texts.pop_back();
+			popped_texts.push(text);
+			
 			return previous_turn;
 		}
 		// If empty, cannot pop turn.
 		return make_pair(-1, -1);
+	}
+	pair<int, int> redo_turn() {
+		if (popped_turns.size() == 0) {
+			return make_pair(-1, -1);
+		}
+		pair<int, int> last_undo_move = popped_turns.top();
+		popped_turns.pop();
+		game_turns.push_back(last_undo_move);
+
+		string text = popped_texts.top();
+		popped_texts.pop();
+		texts.push_back(text);
+
+		return last_undo_move;
 	}
 	// Virtual Methods:
 	void draw_element() {
@@ -156,10 +176,11 @@ private:
 	int board[6][7];
 	void (*refresh)();
 	Game_Log* gl;
-	bool game_paused = false;
-	bool log_paused = false;
 	double hover_p = 15.25;
 public:
+	bool game_paused = false;
+	bool log_paused = false;
+	bool player_has_won = false;
 	vector<player*> players = { &player1, &player2 };
 	int current_player;
 	bool game_started = false;
@@ -376,6 +397,9 @@ public:
 		for (int r = 5; r >= 0; r--) {
 			if (board[r][drop_col] == -1) {
 				gl->log_turn(make_pair(r, drop_col));
+				if (players[0]->isBot && players[1]->isBot) {
+					hover_p = 9 + (drop_col * 2) + 0.25;
+				}
 				board[r][drop_col] = current_player;
 				this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
 				int result = check_win(drop_col, r);
@@ -383,6 +407,7 @@ public:
 					players[result]->win_score += 100;
 					message = players[result]->name + " has won this match.";
 					game_paused = true;
+					player_has_won = true;
 				}
 				else {
 					message = players[current_player]->name + " (" + to_string(drop_col) + "," + to_string(r) + ").";
@@ -402,6 +427,9 @@ public:
 			return;
 		}
 		pair<int,int> cord_pair = gl->pop_previous_turn();
+		if (cord_pair.first == -1) {
+			return;
+		}
 		board[cord_pair.first][cord_pair.second] = -1;
 		this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
 		refresh();
@@ -414,9 +442,44 @@ public:
 		}
 		game_paused = false;
 		log_paused = false;
+		player_has_won = false;
 		hover_p = 15.25;
 		gl->clear();
 		refresh();
+	}
+
+	void next_move() {
+		if (!game_paused && !log_paused) {
+			return;
+		}
+		pair<int, int> cord_pair = gl->redo_turn();
+		if (cord_pair.first == -1) {
+			return;
+		}
+		board[cord_pair.first][cord_pair.second] = players[current_player]->color_index;
+		this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
+		refresh();
+	}
+	void previous_move() {
+		if (!game_paused && !log_paused) {
+			return;
+		}
+		pair<int, int> cord_pair = gl->pop_previous_turn();
+		if (cord_pair.first == -1) {
+			return;
+		}
+		board[cord_pair.first][cord_pair.second] = -1;
+		this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
+		refresh();
+	}
+	void revert_review() {
+		pair<int, int> cord_pair = gl->redo_turn();
+		while (cord_pair.first != -1) {
+			board[cord_pair.first][cord_pair.second] = players[current_player]->color_index;
+			this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
+			cord_pair = gl->redo_turn();
+			refresh();
+		}
 	}
 
 	// (Settings) Setter Methods
