@@ -456,7 +456,7 @@ public:
 		if (cord_pair.first == -1) {
 			return;
 		}
-		board[cord_pair.first][cord_pair.second] = players[current_player]->color_index;
+		board[cord_pair.first][cord_pair.second] = current_player;
 		this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
 		refresh();
 	}
@@ -575,7 +575,6 @@ public:
 			fill(players[i]->color);
 			rect(x, y + (line_size * (i + 1)), w, line_size,50);
 		}
-		
 		fill(255);
 		for (int i = 0; i < players.size(); i++) {
 			y_centered_text(players[i]->name, x + line_size + 0.2, y + (line_size * (i + 1)), line_size, text_size);

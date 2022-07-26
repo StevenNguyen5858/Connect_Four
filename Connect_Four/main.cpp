@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "SNElement.h"
 #include "ConnectFour.h"
-// Testing push from Steven.
 
 
 /*	Explanation for using this SNProcessing and SNElements tool:
