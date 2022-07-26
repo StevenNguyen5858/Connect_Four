@@ -474,11 +474,13 @@ public:
 	}
 	void revert_review() {
 		pair<int, int> cord_pair = gl->redo_turn();
+		sf::Time time_per_frame = sf::milliseconds(1000 / 8);
 		while (cord_pair.first != -1) {
 			board[cord_pair.first][cord_pair.second] = players[current_player]->color_index;
 			this->current_player = (current_player == 0) ? 1 : 0; // rotate turn
 			cord_pair = gl->redo_turn();
 			refresh();
+			sf::sleep(time_per_frame);
 		}
 	}
 
