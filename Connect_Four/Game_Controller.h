@@ -164,7 +164,7 @@ public:
 };
 
 
-class Game_Controller : public SNElement {
+class Game_Controller : public SNClickable, public SNHoverable {
 	// Access specifier:
 private:
 	int bot_difficulty = 0; // 0(easy), 1(medium), 2(hard)
@@ -172,7 +172,6 @@ private:
 	player player2;
 	int starting_player = 0; // 0(player1), 1(player2)
 
-	
 	int board[6][7];
 	void (*refresh)();
 	Game_Log* gl;
@@ -190,8 +189,8 @@ public:
 	Game_Controller() {}
 	// Parameterized Constructor:
 	Game_Controller(string name, double x, double y, double w, double h, void (*refresh)(), Game_Log *gl)
-	: SNElement(name, x, y, w, h){
-		type = "Game Controller";
+		: SNElement(name, x, y, w, h), SNClickable(function), SNHoverable() {
+		this->type = "Game Controller";
 		this->refresh = refresh;
 		this->gl = gl;
 
@@ -233,6 +232,17 @@ public:
 			}
 		}
 		image(player_icons[players[current_player]->color_index], hover_p, 2.25, 1.5, 1.5);
+	}
+	void click_event(string click_type, double mouse_x, double mouse_y) {
+		double grid_x = mouse_x / sw;
+		double grid_y = mouse_y / sh;
+		int drop_col = floor((grid_x - 9) / 2);
+		game_event("6From:" + to_string(current_player) + ",7Event:Place_Token,5Pos:" + to_string(drop_col));
+	}
+	void hover_event(double mouse_x, double mouse_y) {
+		double grid_x = mouse_x / sw;
+		double grid_y = mouse_y / sh;
+		game_event("7Event:Mouse_Move,9Hover_P:" + to_string(grid_x));
 	}
 
 	// (Board) Win Handler
@@ -544,6 +554,9 @@ public:
 		return player_name;
 	}
 };
+void function_refresh();
+Game_Log gl_game_log("GAME LOG", 1, 4, 6, 12.5, &function_refresh);
+Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh, &gl_game_log);
 
 
 class lobby : public SNElement {

@@ -3,11 +3,8 @@
 #include "Game_Controller.h"
 
 
-void function_refresh();
-
 bool uses_dev_grid = false;
-Game_Log gl_game_log("GAME LOG", 1, 4, 6, 12.5, &function_refresh);
-Game_Controller my_game = Game_Controller("My Game", 8.75, 4, 14.5, 12.5, &function_refresh, &gl_game_log);
+
 class SNPage {
 	// Access specifier:
 public:
@@ -65,24 +62,10 @@ public:
 		double grid_y = mouse_y / sh;
 		for (int i = 0; i < elements.size(); i++) {
 			SNElement* e = elements[i];
-			if (e->type == "SNButton") {
+			if (e->isClickable) {
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					SNButton* button_ptr = dynamic_cast<SNButton*>(e);
-					button_ptr->function();
-					cout << e->name << " has been pressed." << endl;
-				}
-			}
-			if (e->type == "SNMenu") {
-				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					SNMenu* menu_ptr = dynamic_cast<SNMenu*>(e);
-					menu_ptr->find_option(grid_x, grid_y);
-					cout << e->name << " has been pressed." << endl;
-				}
-			}
-			if (e->type == "SNRadio_Button") {
-				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					SNRadio_Button* button_ptr = dynamic_cast<SNRadio_Button*>(e);
-					button_ptr->radio_switch();
+					SNClickable* SNClickable_ptr = dynamic_cast<SNClickable*>(e);
+					SNClickable_ptr->click_event("left", mouse_x, mouse_y);
 					cout << e->name << " has been pressed." << endl;
 				}
 			}
@@ -90,38 +73,15 @@ public:
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					SNButton_in_set* button_ptr = dynamic_cast<SNButton_in_set*>(e);
 					button_ptr->function(button_ptr->button_position);
-				}
-			}
-			if (e->type == "Game Controller") {
-				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
-					int drop_col = floor((grid_x - 9) / 2);
-					GC_ptr->game_event("6From:"+ to_string(my_game.current_player) + ",7Event:Place_Token,5Pos:" + to_string(drop_col));
-					//GC_ptr->place_token(grid_x);
-					cout << e->name << " has been pressed." << endl;
 				}
 			}
 		}
 		for (int i = 0; i < post_elements.size(); i++) {
 			SNElement* e = post_elements[i];
-			if (e->type == "SNButton") {
+			if (e->isClickable) {
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					SNButton* button_ptr = dynamic_cast<SNButton*>(e);
-					button_ptr->function();
-					cout << e->name << " has been pressed." << endl;
-				}
-			}
-			if (e->type == "SNMenu") {
-				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					SNMenu* menu_ptr = dynamic_cast<SNMenu*>(e);
-					menu_ptr->find_option(grid_x, grid_y);
-					cout << e->name << " has been pressed." << endl;
-				}
-			}
-			if (e->type == "SNRadio_Button") {
-				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					SNRadio_Button* button_ptr = dynamic_cast<SNRadio_Button*>(e);
-					button_ptr->radio_switch();
+					SNClickable* SNClickable_ptr = dynamic_cast<SNClickable*>(e);
+					SNClickable_ptr->click_event("left", mouse_x, mouse_y);
 					cout << e->name << " has been pressed." << endl;
 				}
 			}
@@ -129,13 +89,6 @@ public:
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
 					SNButton_in_set* button_ptr = dynamic_cast<SNButton_in_set*>(e);
 					button_ptr->function(button_ptr->button_position);
-				}
-			}
-			if (e->type == "Game Controller") {
-				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
-					//GC_ptr->place_token(grid_x);
-					cout << e->name << " has been pressed." << endl;
 				}
 			}
 		}
@@ -146,18 +99,23 @@ public:
 		double grid_y = mouse_y / sh;
 		for (int i = 0; i < elements.size(); i++) {
 			SNElement* e = elements[i];
-			if (e->type == "Game Controller") {
+			if (e->isHoverable) {
 				if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-					Game_Controller* GC_ptr = dynamic_cast<Game_Controller*>(e);
-					GC_ptr->game_event("7Event:Mouse_Move,9Hover_P:" + to_string(grid_x));
-					cout << e->name << " has been pressed." << endl;
+					SNHoverable* SNHoverable_ptr = dynamic_cast<SNHoverable*>(e);
+					SNHoverable_ptr->hover_event(mouse_x, mouse_y);
+					cout << e->name << " is being hovered." << endl;
 				}
 			}
 		}
 	}
 	void handle_keys(string key) {
-		if (has_page_menu) {
-			page_menu->navigate(key);
+		for (int i = 0; i < elements.size(); i++) {
+			SNElement* e = elements[i];
+			if (e->isTypeable) {
+				SNTypeable* SNTypeable_ptr = dynamic_cast<SNTypeable*>(e);
+				SNTypeable_ptr->keypress_event(key);
+				cout << e->name << " is handling a keypress." << endl;
+			}
 		}
 	}
 };

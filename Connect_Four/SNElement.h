@@ -382,6 +382,11 @@ class SNElement {
 	// Access specifier:
 public:
 	string type = "SNElement";
+    // Subclasses: SNClickable, SNTypeable, SNHoverable which each contain a virtual function for their event handling* /
+	bool isClickable = false;
+	bool isTypeable = false;
+	bool isHoverable = false;
+
 	string name;
 	double x, y, w, h;
 	void (*function)();
@@ -389,8 +394,8 @@ public:
 	// Default Constructor:
 	SNElement() {
 	}
-	// Parameterized Constructor:
-	SNElement(string name, double x, double y, double w, double h) {
+	// Parameterized Constructor: // This constructor MUST be called at the most derrived subclass, regardless of if other inherited objects include SNElement.
+	SNElement(string name, double x, double y, double w, double h) { 
 		this->name = name;
 		this->x = x;
 		this->y = y;
@@ -399,13 +404,55 @@ public:
 	}
 
 	// Methods:
-	virtual void draw_element() {
-		cout << " " << name << " (virtual draw func)." << x << "." << y << endl;
-		fill(220);
-		stroke(255);
-		stroke_weight(2);
-		rect(x, y, w, h, 25);
+	virtual void draw_element() = 0; // = 0 forces subclass to implement an overrided function.
+};
+
+
+class SNClickable : virtual public SNElement {
+	// Access specifier:
+public:
+	void (*function)();
+
+	// Default Constructor:
+	SNClickable() {
+		this->isClickable = true;
 	}
+	// Parameterized Constructor:
+	SNClickable(void (*function)()) {
+		this->isClickable = true;
+		this->function = function;
+	}
+
+	// Methods:
+	virtual void click_event(string click_type, double mouse_x, double mouse_y) = 0; // = 0 forces subclass to implement an overrided function.
+};
+
+
+class SNTypeable : virtual public SNElement {
+	// Access specifier:
+public:
+
+	// Default Constructor:
+	SNTypeable() {
+		this->isTypeable = true;
+	}
+	
+	// Methods:
+	virtual void keypress_event(string key) = 0; // = 0 forces subclass to implement an overrided function.
+};
+
+
+class SNHoverable : virtual public SNElement {
+	// Access specifier:
+public:
+
+	// Default Constructor:
+	SNHoverable() {
+		this->isHoverable = true;
+	}
+	
+	// Methods:
+	virtual void hover_event(double mouse_x, double mouse_y) = 0; // = 0 forces subclass to implement an overrided function.
 };
 
 
@@ -442,12 +489,11 @@ public:
 };
 
 
-class SNButton : public SNElement {
+class SNButton : public SNClickable {
 	// Access specifier:
 public:
 	bool is_selected = false;
 	bool is_centered = false;
-	void (*function)();
 
 	// Default Constructor:
 	SNButton() {
@@ -455,14 +501,12 @@ public:
 	}
 	// Parameterized Constructor:
 	SNButton(string name, double x, double y, double w, double h, void (*function)())
-		: SNElement(name, x, y, w, h) {
+		: SNElement(name, x, y, w, h), SNClickable(function) {
 		this->type = "SNButton";
-		this->function = function;
 	}
 	SNButton(string name, double x, double y, double w, double h, bool is_centered, void (*function)())
-		: SNElement(name, x, y, w, h) {
+		: SNElement(name, x, y, w, h), SNClickable(function) {
 		this->type = "SNButton";
-		this->function = function;
 		this->is_centered = is_centered;
 	}
 
@@ -485,6 +529,10 @@ public:
 		else {
 			y_centered_text(name, x + 0.2, y, h, h * .6);
 		}
+	}
+
+	void click_event(string click_type, double mouse_x, double mouse_y) {
+		function();
 	}
 };
 
@@ -525,7 +573,7 @@ public:
 };
 
 
-class SNRadio_Button : public SNButton {
+class SNRadio_Button : public SNClickable {
 	// Access specififer:
 public:
 	bool is_selected = false;
@@ -536,7 +584,7 @@ public:
 	}
 	// Parametereized Constructor:
 	SNRadio_Button(string name, double x, double y, double w, double h, void (*function)(), SNRadio_Button **current_rb)
-		: SNButton(name, x, y, w, h, function) {
+		: SNElement(name, x, y, w, h), SNClickable(function) {
 		this->type = "SNRadio_Button";
 		this->current_rb = current_rb;
 	}
@@ -554,6 +602,10 @@ public:
 		stroke_weight(2);
 		y_centered_text(name, x + 1.2, y, h, 0.6);
 	}
+	void click_event(string click_type, double mouse_x, double mouse_y) {
+		radio_switch();
+	}
+
 	void radio_switch() {
 		SNRadio_Button* t = *current_rb;
 		if (t != NULL) {
@@ -601,7 +653,7 @@ public:
 };
 
 
-class SNOption : public SNButton {
+class SNOption : public SNClickable {
 	// Access specifier:
 public:
 	double x2 = 0;
@@ -613,11 +665,11 @@ public:
 	SNOption() {}
 	// Parameterized Constructor:
 	SNOption(string name, double x, double y, double w, double h, void (*function)())
-		: SNButton(name, x, y, w, h, function) {
+		: SNElement(name, x, y, w, h), SNClickable(function) {
 		this->type = "SNOption";
 	}
 	SNOption(string name, double x, double y, double w, double h, string option_data, void (*function)())
-		: SNButton(name, x, y, w, h, function) {
+		: SNElement(name, x, y, w, h), SNClickable(function) {
 		this->type = "SNOption";
 		this->option_data = option_data;
 	}
@@ -649,6 +701,9 @@ public:
 			y_centered_text(option_data, x2 + 0.2, y, h, 0.8);
 		}
 	}
+	void click_event(string click_type, double mouse_x, double mouse_y) {
+		function();
+	}
 };
 
 
@@ -665,7 +720,7 @@ public:
 	}
 	// Parameterized Constructor:
 	SNRadio_Option(string name, double x, double y, double w, double h, void (*function)(), vector<string> radios)
-	: SNOption(name, x, y, w, h, function) {
+		: SNElement(name, x, y, w, h), SNOption(name, x, y, w, h, function) {
 		this->type = "SNRadio_Option";
 		this->radios = radios;
 	}
@@ -708,15 +763,17 @@ public:
 			current_x = current_x + 1.2 + text_width(radios[i], 0.8) + spacer;
 		}
 	}
-	string radio_switch() {
+	void click_event(string click_type, double mouse_x, double mouse_y) {
+		function();
+	}
+	void radio_switch() {
 		radio_pos = (radio_pos == radios.size() - 1) ? 0 : radio_pos + 1;
-		return radios[radio_pos];
 	}
 };
 
 
 bool uses_menu_outline = false;
-class SNMenu : public SNElement {
+class SNMenu : public SNClickable, public SNTypeable {
 	// Access specifier:
 public:
 	vector<SNOption*> options;
@@ -729,7 +786,8 @@ public:
 	// Default Constructor:
 	SNMenu() {}
 	// Parameterized Constructor:
-	SNMenu(string name, double x, double y, double w, double option_h, vector<SNOption*> options, void (*refresh)()) {
+	SNMenu(string name, double x, double y, double w, double option_h, vector<SNOption*> options, void (*refresh)()) 
+		: SNElement(name, x, y, w, h), SNClickable(function), SNTypeable() {
 		this->type = "SNMenu";
 		this->name = name;
 		this->x = x;
@@ -746,6 +804,45 @@ public:
 		}
 	}
 
+	// Methods
+	void click_event(string click_type, double mouse_x, double mouse_y) {
+		double grid_x = mouse_x / sw;
+		double grid_y = mouse_y / sh;
+		for (int i = 0; i < options.size(); i++) {
+			SNOption* e = options[i];
+			if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
+				e->click_event("left", mouse_x, mouse_y);
+				selected_option_pos = i;
+				refresh();
+			}
+		}
+	}
+	void keypress_event(string key) {
+		if (key == "w" && selected_option_pos > 0) {
+			selected_option_pos--;
+			for (int x = selected_option_pos; x > 0; x--) {
+				if (options[x]->name != " " && options[x]->name != "") {
+					break;
+				}
+				selected_option_pos--;
+			}
+
+		}
+		if (key == "s" && selected_option_pos < num_options - 1) {
+			selected_option_pos++;
+			for (int x = selected_option_pos; x < options.size() - 1; x++) {
+				if (options[x]->name != " " && options[x]->name != "") {
+					break;
+				}
+				selected_option_pos++;
+			}
+		}
+		if (key == "ENTER") {
+			options[selected_option_pos]->function();
+			cout << "ENTER " << options[selected_option_pos]->name << " Selected." << endl;
+		}
+		refresh();
+	}
 	bool updated_once = false;
 	void resize_update() {
 		// Set proper rect for options.
@@ -802,40 +899,6 @@ public:
 			}
 			options[i]->draw_element();
 		}
-	}
-	void find_option(double grid_x, double grid_y) {
-		for (int i = 0; i < options.size(); i++) {
-			SNOption* e = options[i];
-			if (e->x < grid_x && grid_x < e->x + e->w && e->y < grid_y && grid_y < e->y + e->h) {
-				e->function();
-			}
-		}
-	}
-	void navigate(string key) {
-		if (key == "w" && selected_option_pos > 0) {
-			selected_option_pos--;
-			for (int x = selected_option_pos; x > 0; x--) {
-				if (options[x]->name != " " && options[x]->name != "") {
-					break;
-				}
-				selected_option_pos--;
-			}
-
-		}
-		if (key == "s" && selected_option_pos < num_options - 1) {
-			selected_option_pos++;
-			for (int x = selected_option_pos; x < options.size() - 1; x++) {
-				if (options[x]->name != " " && options[x]->name != "") {
-					break;
-				}
-				selected_option_pos++;
-			}
-		}
-		if (key == "ENTER") {
-			options[selected_option_pos]->function();
-			cout << "ENTER " << options[selected_option_pos]->name << " Selected." << endl;
-		}
-		refresh();
 	}
 };
 

@@ -41,7 +41,7 @@ void setup() {
 	my_app.add_page(&solo_lobby_page);
 	my_app.add_page(&solo_setup_page);
 	my_app.add_page(&play_page);
-	my_app.current_page = &title_page;
+	my_app.current_page = &SNEM;
 }
 
 // Loops for application drawing.

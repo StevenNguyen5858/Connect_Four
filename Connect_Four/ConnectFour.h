@@ -381,8 +381,12 @@ void function_msetup_to_mlobby() {
 
 // solo_setup_page element functions.
 void function_difficulty() {
+	// Note this function was implemented in a backwards sense.
+	// Other settings options changes the game setting value, then changes the display to match the value.
+	// This function does the inverse. Option display is changed, then the game setting is set to it.
+	ro_difficulty.radio_switch();
+	my_game.set_bot_difficulty(ro_difficulty.radios[ro_difficulty.radio_pos]);
 	my_app.refresh_page();
-	my_game.set_bot_difficulty(ro_difficulty.radio_switch());
 }
 void function_o_s_player1() {
 	my_game.player1_toggle_type();
